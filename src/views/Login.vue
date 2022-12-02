@@ -82,7 +82,7 @@ export default {
               type: "success",
               timeout: 1500,
             });
-            router.push("/home");
+            router.push("/accountmanager");
             error.value = "";
           })
           .catch((err) => {

@@ -1,11 +1,19 @@
 <template>
   <div class="list-student">
     <h2 class="title">Danh sách sinh viên đồ án</h2>
-    <div class="btn-add">
-      <a-button type="primary" @click="showDrawer">
-        <template #icon><PlusOutlined /></template>
-        Add New
-      </a-button>
+    <div class="flex-al-sp">
+      <a-input-search
+        v-model:value="searchStudent"
+        placeholder="Tìm sinh viên"
+        style="width: 400px"
+        @change="onSearch"
+      />
+      <div class="btn-add">
+        <a-button type="primary" @click="showDrawer">
+          <template #icon><PlusOutlined /></template>
+          Add New
+        </a-button>
+      </div>
     </div>
     <div class="drawer-wrapper">
       <a-drawer
@@ -138,6 +146,8 @@ export default {
   },
   setup() {
     const listStudent = ref([]);
+    const filterStudent = ref([]);
+    const searchStudent = ref("");
     const listTeacher = ref([]);
     const route = useRoute();
     const current = ref(1);
@@ -270,6 +280,7 @@ export default {
                 teacherId: "",
                 graduationId: id,
               };
+              filterStudent.value = listStudent.value;
               visible.value = false;
             }
           })
@@ -313,8 +324,9 @@ export default {
                 name: newStudent.name,
                 className: newStudent.className,
                 graduationTopic: newStudent.graduationTopic,
-                teacher: getTeacher(newStudent.teacherId)
+                teacher: getTeacher(newStudent.teacherId),
               };
+              filterStudent.value = listStudent.value;
               isEdit.value = false;
               visible.value = false;
             }
@@ -352,11 +364,12 @@ export default {
                 graduationTopic: item.graduationTopic,
                 teacher: getTeacher(item.teacherId),
               }));
+              filterStudent.value = listStudent.value;
               totalPage.value = res.data.pagination.total_page;
             }
           })
           .catch((err) => {
-            listStudent.value = [];
+            console.log(err);
           });
       }
     };
@@ -463,6 +476,18 @@ export default {
       getListStudent(page - 1, pageSize);
     };
 
+    const onSearch = () => {
+      if (searchStudent.value) {
+        const listsStudent = [...listStudent.value];
+        const newListStudent = listsStudent.filter((item) =>
+          item.name.includes(searchStudent.value.toLowerCase())
+        );
+        listStudent.value = newListStudent;
+      } else {
+        listStudent.value = filterStudent.value;
+      }
+    };
+
     return {
       columns,
       listStudent,
@@ -485,6 +510,9 @@ export default {
       editStudent,
       getListTeacher,
       listTeacher,
+      searchStudent,
+      onSearch,
+      filterStudent,
     };
   },
 };

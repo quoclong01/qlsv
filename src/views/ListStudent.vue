@@ -1,11 +1,19 @@
 <template>
   <div class="list-student">
     <h2 class="title">Danh sách sinh viên thực tập</h2>
-    <div class="btn-add">
-      <a-button type="primary" @click="showDrawer">
-        <template #icon><PlusOutlined /></template>
-        Add New
-      </a-button>
+    <div class="flex-al-sp">
+      <a-input-search
+        v-model:value="searchStudent"
+        placeholder="Tìm sinh viên"
+        style="width: 400px"
+        @change="onSearch"
+      />
+      <div class="btn-add">
+        <a-button type="primary" @click="showDrawer">
+          <template #icon><PlusOutlined /></template>
+          Add New
+        </a-button>
+      </div>
     </div>
     <div class="drawer-wrapper">
       <a-drawer
@@ -60,17 +68,6 @@
                 </a-select>
               </a-form-item>
             </a-col>
-
-            <!-- <a-col :span="12">
-              <a-form-item label="Teacher" name="teacher">
-                <a-select
-                  v-model="form.teacher"
-                  placeholder="Chọn giáo viên hướng dẫn"
-                  :options="listTeacher"
-                >
-                </a-select>
-              </a-form-item>
-            </a-col> -->
           </a-row>
         </a-form>
         <template #extra>
@@ -138,6 +135,7 @@ export default {
   },
   setup() {
     const listStudent = ref([]);
+    const filterStudent = ref([]);
     const semester = ref({});
     const route = useRoute();
     const current = ref(1);
@@ -145,6 +143,7 @@ export default {
     const id = route.params.id;
     const type = "internship";
     const loadingRequestAPI = ref(false);
+    const searchStudent = ref("");
     const isEdit = ref(false);
     const columns = [
       {
@@ -264,6 +263,7 @@ export default {
                 ).toString(),
                 stt: listStudent.value.length + (current.value - 1) * 10,
               });
+              filterStudent.value = listStudent.value;
               student.value = {
                 className: "",
                 internshipId: id,
@@ -318,6 +318,7 @@ export default {
                 className: newStudent.className,
                 internshipPlace: newStudent.internshipPlace,
               };
+              filterStudent.value = listStudent.value;
               isEdit.value = false;
               visible.value = false;
             }
@@ -356,6 +357,7 @@ export default {
                 semester: semester.value.semester,
                 year: semester.value.year,
               }));
+              filterStudent.value = listStudent.value;
               totalPage.value = res.data.pagination.total_page;
             }
           })
@@ -436,6 +438,7 @@ export default {
             listStudent.value = listStudent.value.filter(
               (item) => item.key !== key
             );
+            filterStudent.value = listStudent.value;
           })
           .catch((err) => {
             createToast("Delete failed.", {
@@ -453,6 +456,18 @@ export default {
 
     const onChange = (page, pageSize) => {
       getListStudent(page - 1, pageSize);
+    };
+
+    const onSearch = () => {
+      if (searchStudent.value) {
+        const listsStudent = [...listStudent.value];
+        const newListStudent = listsStudent.filter((item) =>
+          item.name.includes(searchStudent.value.toLowerCase())
+        );
+        listStudent.value = newListStudent;
+      } else {
+        listStudent.value = filterStudent.value;
+      }
     };
 
     return {
@@ -475,6 +490,8 @@ export default {
       visible,
       isEdit,
       editStudent,
+      searchStudent,
+      onSearch,
     };
   },
 };
