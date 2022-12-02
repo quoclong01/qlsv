@@ -16,14 +16,14 @@
       >
         <template #bodyCell="{ column, text, record }">
           <template v-if="column.dataIndex === 'status'">
-            <p v-if="text == 'OPEN'">
+            <div v-if="text == 'OPEN'">
               <a-badge status="success" />
               Mở
-            </p>
-            <p v-else>
+            </div>
+            <div v-else>
               <a-badge status="error" />
               Đóng
-            </p>
+            </div>
           </template>
           <template v-else-if="column.dataIndex === 'operation'">
             <div class="editable-row-group">
