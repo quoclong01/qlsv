@@ -1,0 +1,132 @@
+
+
+<template>
+  <div class="qlsv">
+    <p>Đánh giá thực tập tốt nghiệp</p>
+
+   
+    <div class="form">
+      <div class="form__table">
+        <table>
+          <tr>
+            <th>STT</th>
+            <th>Đợt</th>
+            <th>Năm học</th>
+            <th>Trạng thái</th>
+            <th class="size">Thao tác</th>
+          </tr>
+
+          <tr v-for="item in lists" :key="item.id">
+            <td>{{ item.id }}</td>
+            <td>{{ item.batch }}</td>
+            <td>{{ item.year }}</td>
+            <td><a-badge status="success" />{{ item.status }}</td>
+            
+              <td class="btn-openn">
+                <router-link to="/nhap2">
+              <button class="btn-open">
+                 Mở
+              </button>
+              </router-link>
+            </td>
+            
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</template>
+
+
+<script>
+
+import {
+  PlusCircleOutlined, 
+} from "@ant-design/icons-vue";
+import { defineComponent } from "vue";
+import { Button } from "ant-design-vue";
+import "ant-design-vue/dist/antd.css";
+
+
+export default defineComponent({
+  components: {
+    PlusCircleOutlined,
+    Button,
+  
+  },
+
+  name: " danhgiathutap",
+  data() {
+    return {
+      list: {
+        id: "",
+        batch: "",
+        year: "",
+        status: "",
+      },
+
+      lists: [
+        { id: 1, batch: 1, year: 2022, status: "mở" },
+
+        { id: 2, batch: 2, year: 2023, status: "mở" },
+
+        { id: 3, batch: 3, year: 2024, status: "mở" },
+      ],
+    };
+  },
+
+  methods: {
+    // openItem(item) {
+    //   const i = this.lists.findIndex((x) => x.id == item.id);
+    //   this.lists.splice(i, 1);
+    // },
+  }, //methods
+});
+</script>
+
+<style>
+
+.form {
+  width: 100%;
+}
+td {
+  padding: 10px;
+  text-align: center;
+}
+table,
+th,
+td {
+  border-collapse: collapse;
+  border: 1px solid black;
+  color: black;
+}
+th {
+  color: black;
+}
+.form__search {
+  text-align: initial;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-left: 40px;
+}
+
+
+th.size {
+  width: 120px;
+}
+
+
+button.btn-open {
+  width: 59px;
+  color: white;
+  border: 1px solid white;
+  background-color: rgb(66, 161, 238);
+  cursor: pointer;
+}
+
+
+/* 
+button.ant-btn.ant-btn-primary {
+  margin-left: 770px;
+} */
+</style>
