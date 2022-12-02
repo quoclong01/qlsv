@@ -7,12 +7,6 @@
         Add New
       </a-button>
     </div>
-    <!-- <FormAdd
-      :id="id"
-      :listStudent="listStudent"
-      :current="current"
-      :keyValue="keyValue"
-    /> -->
     <div class="drawer-wrapper">
       <a-drawer
         :width="800"
