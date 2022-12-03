@@ -196,6 +196,7 @@ export default {
     const onChange = (page, pageSize) => {
       getListSemeters(page - 1, pageSize);
     };
+     
     const handleStatus = (key) => {
       const semester = listSemester.value.find((item) => item.key == key);
       semester.status = semester.status === "OPEN" ? "CLOSE" : "OPEN";

@@ -80,11 +80,13 @@
 </template>
 <script>
 import axios from "axios";
-import AddBatch from "../components/AddBatch.vue";
 import { ref, onMounted } from "vue";
+
 import { environment, ENDPOINT } from "../shared/config/index";
 import { getData } from "../shared/common/common";
 import { ACCESS_TOKEN } from "../shared/constant/constant";
+
+import AddBatch from "../components/AddBatch.vue";
 import { createToast } from "mosha-vue-toastify";
 
 export default {

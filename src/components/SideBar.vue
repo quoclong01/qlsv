@@ -11,7 +11,14 @@
       >
         <p class="sidebar-link">Quản lý tài khoản</p>
       </router-link>
-
+      <router-link
+        to="/studentmanager"
+        active-class="active"
+        tag="button"
+        class="side-btn"
+      >
+        <p class="sidebar-link">Quản lý sinh viên</p>
+      </router-link>
       <router-link
         to="/classmanager"
         active-class="active"

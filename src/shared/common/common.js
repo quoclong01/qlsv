@@ -7,4 +7,9 @@ export const setData = (key, value) => {
   localStorage.setItem(key, JSON.stringify(value));
 };
 
-
+export const getDataById = (data, id) => {
+  if (id) {
+    return data.find((item) => item.value === id).label;
+  }
+  return "";
+};

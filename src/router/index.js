@@ -35,6 +35,10 @@ const router = createRouter({
           component: () => import("../views/AccountManager.vue"),
         },
         {
+          path: "/studentmanager",
+          component: () => import("../views/StudentManager.vue"),
+        },
+        {
           path: "/listdoan",
           component: () => import("../views/ListDoan.vue"),
         },
