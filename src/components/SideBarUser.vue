@@ -33,7 +33,7 @@
 <script>
 import { useRouter } from "vue-router";
 import { getData } from "../shared/common/common";
-import { ACCESS_TOKEN } from "../shared/constant/constant";
+import { ACCESS_TOKEN, USER_INFO } from "../shared/constant/constant";
 
 export default {
   setup() {
@@ -41,6 +41,7 @@ export default {
     const handleSignOut = () => {
       if (getData(ACCESS_TOKEN, "")) {
         localStorage.removeItem(ACCESS_TOKEN);
+        localStorage.removeItem(USER_INFO);
         route.push("/");
       }
     };

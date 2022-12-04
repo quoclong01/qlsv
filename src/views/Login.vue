@@ -36,12 +36,14 @@
 </template>
 
 <script>
-import { ref, watch } from "vue";
 import axios from "axios";
+import { ref, watch } from "vue";
+import router from "@/router";
+
 import { environment, ENDPOINT } from "../shared/config/index";
 import { setData } from "../shared/common/common";
-import { ACCESS_TOKEN } from "../shared/constant/constant";
-import router from "@/router";
+import { ACCESS_TOKEN, USER_INFO } from "../shared/constant/constant";
+
 import { createToast } from "mosha-vue-toastify";
 
 export default {
@@ -79,6 +81,7 @@ export default {
           .then((res) => {
             if (res.data.success) {
               setData(ACCESS_TOKEN, res.data.data.jwt);
+              setData(USER_INFO, res.data.data.user);
               createToast("Đăng nhập thành công.", {
                 type: "success",
                 timeout: 1500,

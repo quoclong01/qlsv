@@ -1,4 +1,5 @@
 export const ACCESS_TOKEN = "ACCESS_TOKEN";
+export const USER_INFO = "USER_INFO";
 export const PAGE_SIZE_LARGE = 1000000;
 
 export const columnStudents = [
