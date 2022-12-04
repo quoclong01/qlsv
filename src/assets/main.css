@@ -241,7 +241,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0 30px;
+  gap: 0 15px;
   margin-bottom: 50px;
 }
 
@@ -283,4 +283,15 @@ td.text-center {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.form-class-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 50px;
+}
+
+.ant-col.ant-form-item-control {
+  width: 100%!important;  
 }

@@ -22,16 +22,14 @@ const router = createRouter({
           path: "",
           component: () => import("../views/Home.vue"),
         },
-        {
-          path: "/qlsv/:id/edit",
-          component: () => import("../components/FormEdit.vue"),
-        },
+
         {
           path: "/classmanager",
           component: () => import("../views/ClassManager.vue"),
         },
         {
           path: "/accountmanager",
+          name: "homeadmin",
           component: () => import("../views/AccountManager.vue"),
         },
         {
@@ -44,7 +42,7 @@ const router = createRouter({
         },
 
         {
-          path: "/list/granduation/:id",
+          path: "/list/graduation/:id",
           name: "listStudentPass",
           component: () => import("../views/ListStudentPass.vue"),
         },

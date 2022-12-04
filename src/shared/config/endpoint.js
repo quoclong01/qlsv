@@ -20,6 +20,7 @@ export const ENDPOINT = {
   semesters: {
     index: `${RESOURCES.semesters}`,
     type: `${RESOURCES.semesters}/type`,
+    search: `${RESOURCES.semesters}/search`
   },
   students: {
     index: `${RESOURCES.students}`,

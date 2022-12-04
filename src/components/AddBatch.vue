@@ -1,105 +1,112 @@
 <template>
   <div class="form-intern">
-    <div class="form-intern-group">
-      <a-select
-        show-search
-        placeholder="Select a batch"
-        style="width: 200px"
-        :options="optionBatchs"
-        @change="handleChangeBatch"
-      ></a-select>
-    </div>
-    <div class="form-intern-group">
-      <a-space direction="vertical" :size="12">
-        <a-date-picker
-          style="width: 200px"
-          picker="year"
-          @change="handleChangeYear"
-        />
-      </a-space>
-    </div>
-
-    <div class="form-intern-group">
-      <a-select
-        placeholder="Select a status"
-        show-search
-        style="width: 200px"
-        :options="optionStatus"
-        @change="handleChangeType"
-      ></a-select>
-    </div>
-
-    <a-button @click.prevent="addSemester" type="primary">Submit</a-button>
+    <a-button type="primary" @click="showDrawer">
+      <PlusOutlined />
+      <template v-if="typeSemester === 'INTERNSHIP'">
+        Thêm đợt thực tập
+      </template>
+      <template v-else> Thêm đợt đồ án </template>
+    </a-button>
+    <a-drawer
+      :visible="visible"
+      :width="800"
+      :body-style="{ paddingBottom: '80px' }"
+      :footer-style="{ textAlign: 'right' }"
+      @close="onClose"
+    >
+      <a-form layout="vertical">
+        <a-row :gutter="16">
+          <a-col :span="12">
+            <a-form-item label="Đợt" name="semester">
+              <a-input
+                v-model:value="semesters.semester"
+                placeholder="Nhập đợt thực tập"
+              />
+            </a-form-item>
+          </a-col>
+          <a-col :span="12">
+            <a-form-item label="Năm học" name="year">
+              <a-date-picker
+                style="width: 100%"
+                picker="year"
+                @change="handleChangeYear"
+              />
+            </a-form-item>
+          </a-col>
+          <a-col :span="12">
+            <a-form-item label="Năm học" name="year">
+              <a-select
+                placeholder="Select a status"
+                show-search
+                :options="optionStatus"
+                @change="handleChangeType"
+              ></a-select>
+            </a-form-item>
+          </a-col>
+        </a-row>
+      </a-form>
+      <template #extra>
+        <a-space>
+          <a-button type="primary" @click="addSemester">Thêm</a-button>
+        </a-space>
+      </template>
+    </a-drawer>
   </div>
 </template>
 <script>
 import axios from "axios";
-import { ref } from "vue";
+import { ref, toRef } from "vue";
+
 import { environment, ENDPOINT } from "../shared/config/index";
 import { getData } from "../shared/common/common";
-import { ACCESS_TOKEN } from "../shared/constant/constant";
+import { ACCESS_TOKEN, optionStatus } from "../shared/constant/constant";
+
 import { createToast } from "mosha-vue-toastify";
+import { PlusOutlined } from "@ant-design/icons-vue";
 
 export default {
+  components: {
+    PlusOutlined,
+  },
   props: {
     listSemester: Array,
     current: Number,
-    typeSemester: String
+    typeSemester: String,
   },
   setup(props) {
-    const internship = ref({
+    const typeSemester = toRef(props, 'typeSemester');
+    const semesters = ref({
       semester: "",
       year: "",
       status: "",
     });
+    const visible = ref(false);
 
-    const optionBatchs = [
-      {
-        value: "Đợt 1",
-        label: "Đợt 1",
-      },
-      {
-        value: "Đợt 2",
-        label: "Đợt 2",
-      },
-      {
-        value: "Đợt 3",
-        label: "Đợt 3",
-      },
-    ];
+    const showDrawer = () => {
+      visible.value = true;
+    };
 
-    const optionStatus = [
-      {
-        value: "OPEN",
-        label: "OPEN",
-      },
-      {
-        value: "CLOSE",
-        label: "CLOSE",
-      },
-    ];
+    const onClose = () => {
+      visible.value = false;
+    };
 
     const addSemester = () => {
-      if (
-        internship.value.semester ||
-        internship.value.year ||
-        internship.value.status
-      ) {
-        if (getData(ACCESS_TOKEN, "")) {
-          const data = { ...internship.value, type: props.typeSemester };
-          const config = {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: getData(ACCESS_TOKEN, ""),
-            },
-          };
-          axios
-            .post(
-              `${environment.API_URL}${ENDPOINT.semesters.index}`,
-              JSON.stringify(data),
-              config
-            )
-            .then((res) => {
+      if (getData(ACCESS_TOKEN, "")) {
+        const data = { ...semesters.value, type: props.typeSemester };
+        const config = {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: getData(ACCESS_TOKEN, ""),
+          },
+        };
+        axios
+          .post(
+            `${environment.API_URL}${ENDPOINT.semesters.index}`,
+            JSON.stringify(data),
+            config
+          )
+          .then((res) => {
+            if (res.data.success) {
               createToast(res.data.message, {
                 type: "success",
                 timeout: 1500,
@@ -112,37 +119,36 @@ export default {
                 stt: props.listSemester.length + (props.current - 1) * 10,
                 ...res.data.data,
               });
-            })
-            .catch((err) => {
-              createToast("Create Failed.", {
-                type: "danger",
-                timeout: 1500,
-              });
+              visible.value = false;
+            }
+          })
+          .catch((err) => {
+            createToast("Create Failed.", {
+              type: "danger",
+              timeout: 1500,
             });
-        }
+          });
       }
     };
 
     const handleChangeYear = (value) => {
-      internship.value.year = value.$y.toString();
-    };
-
-    const handleChangeBatch = (value) => {
-      internship.value.semester = value;
+      semesters.value.year = value.$y.toString();
     };
 
     const handleChangeType = (value) => {
-      internship.value.status = value;
+      semesters.value.status = value;
     };
 
     return {
-      optionBatchs,
       optionStatus,
-      internship,
+      semesters,
       addSemester,
-      handleChangeBatch,
       handleChangeYear,
       handleChangeType,
+      visible,
+      showDrawer,
+      onClose,
+      typeSemester,
     };
   },
 };

@@ -77,13 +77,19 @@ export default {
         axios
           .post(`${environment.API_URL}${ENDPOINT.auth.login}`, data)
           .then((res) => {
-            setData(ACCESS_TOKEN, res.data.data.jwt);
-            createToast("Đăng nhập thành công.", {
-              type: "success",
-              timeout: 1500,
-            });
-            router.push("/accountmanager");
-            error.value = "";
+            if (res.data.success) {
+              setData(ACCESS_TOKEN, res.data.data.jwt);
+              createToast("Đăng nhập thành công.", {
+                type: "success",
+                timeout: 1500,
+              });
+              if (res.data.data.user.role === "ADMIN") {
+                router.push({ name: "homeadmin" });
+              } else {
+                router.push({ name: "evaluationtt" });
+              }
+              error.value = "";
+            }
           })
           .catch((err) => {
             error.value = err.response.data.message;
@@ -102,8 +108,8 @@ export default {
       password,
       error,
       isError,
-      submitForm
-    }
+      submitForm,
+    };
   },
 };
 </script>

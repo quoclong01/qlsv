@@ -25,7 +25,6 @@
               />
             </a-form-item>
           </a-col>
-
           <a-col :span="12">
             <a-form-item label="Lớp" name="className">
               <a-select

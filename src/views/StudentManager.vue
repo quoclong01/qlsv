@@ -120,7 +120,7 @@ export default {
           };
           axios
             .get(
-              `${environment.API_URL}${ENDPOINT.students.index}?${name ? `name=${name}` : ''}&page=${page}&page-size=${pageSize}`,
+              `${environment.API_URL}${ENDPOINT.students.index}?page=${page}&page-size=${pageSize}${name ? `&name=${name}` : ''}`,
               config
             )
             .then((res) => {

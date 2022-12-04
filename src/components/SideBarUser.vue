@@ -1,87 +1,52 @@
 <template>
-    <div class="sidebarusers">
-        <div class="title">
-            HUCE Manager
-            <router-link to="/" active-class="active" tag="button" class="side-btn">
-            <div class="logout">
-                Đăng xuất
-            </div>
-            </router-link>
-        </div>
+  <div class="sidebarusers">
+    <h1 class="sidebar-title">HUCE Manager</h1>
+    <div class="sidebar-menu">
+      <router-link
+        to="/evaluationtt"
+        active-class="active"
+        tag="button"
+        class="side-btn"
+      >
+        <p class="sidebar-link">Đánh giá thực tập tốt nghiệp</p>
+      </router-link>
 
-
-        <div class="menu-items">
-
-            <router-link to="/evaluationtt" active-class="active" tag="button" class="side-btn">
-            <div class="link-container"> 
-                 Đánh giá thực tập tốt nghiệp
-            </div>
-            </router-link>
-
-            <router-link to="/evaluationda" active-class="active" tag="button" class="side-btn">
-            <div class="link-container"> 
-                 Đánh giá đồ án tốt nghiệp
-            </div>
-            </router-link>
-
-
-            
-        </div>
+      <router-link
+        to="/evaluationda"
+        active-class="active"
+        tag="button"
+        class="side-btn"
+      >
+        <p class="sidebar-link">Đánh giá đồ án tốt nghiệp</p>
+      </router-link>
+      <button
+        class="side-btn"
+        style="text-align: left"
+        @click.prevent="handleSignOut"
+      >
+        <p class="sidebar-link">Đăng xuất</p>
+      </button>
     </div>
+  </div>
 </template>
 
 <script>
+import { useRouter } from "vue-router";
+import { getData } from "../shared/common/common";
+import { ACCESS_TOKEN } from "../shared/constant/constant";
+
 export default {
-    
-}
+  setup() {
+    const route = useRouter();
+    const handleSignOut = () => {
+      if (getData(ACCESS_TOKEN, "")) {
+        localStorage.removeItem(ACCESS_TOKEN);
+        route.push("/");
+      }
+    };
+    return {
+      handleSignOut,
+    };
+  },
+};
 </script>
-
-
-<style>
-/* .title{
-    text-align: center;
-    color: white;
-    font-size: 24px;
-    margin-top: 10px;
-} */
-.menu-items{
-    display: flex;
-    flex-direction: column;
-    margin-top: 40px;
-   
-}
-
-/* .menu-items > * {
-    margin-top: 30px;
-} */
-
-
-.link-container {
-    display: inline-block;
-    /* width: -webkit-fill-available; */
-    /* background-color:white; */
-    margin-bottom: 7px;
-    /* border-radius: 4px; */
-    font-weight: 500;
-    height: 30px;
-    margin-left: 3px;
-}
-
-.side-btn:focus{
-    outline: none;
-}
-.side-btn.active{
-    background-color: white;
-    color: teal;
-    font-weight: 500;
-}
-.side-btn{
-    border: none;
-    padding: 16px 0px;
-    cursor: pointer;
-    font-size: 16px;
-    color: white;
-    background-color: transparent;
-}
-
-</style>

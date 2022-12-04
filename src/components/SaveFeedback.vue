@@ -69,22 +69,3 @@ export default {
   }, //data
 };
 </script>
-
-<style>
-button.ant-btn.ant-btn-primary.btn-accout {
-  margin-left: 0px;
-  margin-bottom: 20px;
-}
-input.ip-note {
-  margin-left: 38px;
-  margin-bottom: 20px;
-}
-
-input.ip-nametopic {
-  margin-bottom: 10px;
-}
-
-input.ip-score {
-  margin-bottom: 10px;
-}
-</style>

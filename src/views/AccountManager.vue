@@ -91,42 +91,26 @@ export default {
         title: "STT",
         dataIndex: "stt",
         width: "5%",
-        slots: {
-          customRender: "stt",
-        },
         className: "text-center",
       },
       {
         title: "Tài khoản",
         dataIndex: "username",
-        width: "22%",
-        slots: {
-          customRender: "username",
-        },
         className: "text-center",
       },
       {
         title: "Mật khẩu",
         dataIndex: "password",
-        width: "22%",
-        slots: {
-          customRender: "password",
-        },
         className: "text-center",
       },
       {
         title: "Loại",
         dataIndex: "role",
-        width: "22%",
-        slots: {
-          customRender: "role",
-        },
         className: "text-center",
       },
       {
         title: "Chức năng",
         dataIndex: "operation",
-        width: "22%",
         slots: {
           customRender: "operation",
         },
