@@ -1,7 +1,15 @@
 <template>
   <div class="account-manager">
     <h2 class="title">Quản lý tài khoản</h2>
-    <AddAccount :listAccount="listAccount" :current="current" />
+    <div class="flex-al-sp">
+      <a-input-search
+        v-model:value="searchUser"
+        placeholder="Tìm tài khoản"
+        style="width: 400px"
+        @change="onSearch"
+      />
+      <AddAccount :listAccount="listAccount" :current="current" />
+    </div>
     <div class="account-manager-content">
       <a-table
         class="table-wrapper"
@@ -93,6 +101,7 @@ export default {
     const listAccount = ref([]);
     const current = ref(1);
     const isRequestAPI = ref(false);
+    const searchUser = ref("");
     const password = ref({
       id: "",
       new_password: "",
@@ -247,6 +256,8 @@ export default {
       getListAccount(page - 1, pageSize);
     };
 
+    const onSearch = () => {};
+
     return {
       totalPage,
       listAccount,
@@ -259,6 +270,7 @@ export default {
       handleOk,
       showModal,
       password,
+      onSearch,
     };
   },
 };

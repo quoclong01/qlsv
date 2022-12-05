@@ -1,53 +1,54 @@
 <template>
-  <form class="form-account">
-    <table class="form-account-table">
-      <tr>
-        <td><label for="username">Tài khoản:</label></td>
-        <td>
-          <div class="form-account-group">
-            <a-input
-              id="username"
-              class="form-account-input"
-              v-model:value="account.username"
-            />
-          </div>
-        </td>
-      </tr>
-      <tr>
-        <td><label for="password">Mật khẩu:</label></td>
-        <td>
-          <div class="form-account-group">
-            <a-input
-              id="password"
-              class="form-account-input"
-              type="password"
-              v-model:value="account.password"
-            />
-          </div>
-        </td>
-      </tr>
-      <tr>
-        <td><label for="role">Loại:</label></td>
-        <td>
-          <div class="form-account-group">
-            <a-select
-              name="role"
-              id="role"
-              v-model:value="account.role"
-              class="form-account-input"
-              style="text-align: left"
-            >
-              <a-select-option value="ADMIN">ADMIN</a-select-option>
-              <a-select-option value="TEACHER">TEACHER</a-select-option>
-            </a-select>
-          </div>
-        </td>
-      </tr>
-    </table>
-    <a-button type="primary" size="large" class="btn-account" @click="addUser"
-      >Thêm tài khoản</a-button
+  <div>
+    <a-drawer
+      :visible="visible"
+      :width="800"
+      :body-style="{ paddingBottom: '80px' }"
+      :footer-style="{ textAlign: 'right' }"
+      @close="onClose"
     >
-  </form>
+      <a-form layout="vertical">
+        <a-row :gutter="16">
+          <a-col :span="12">
+            <a-form-item label="Tài khoản" name="username">
+              <a-input
+                v-model:value="account.username"
+                placeholder="Nhập tài khoản"
+              />
+            </a-form-item>
+          </a-col>
+          <a-col :span="12">
+            <a-form-item label="Mật khẩu" name="password">
+              <a-input-password
+                v-model:value="account.password"
+                placeholder="Nhập mật khảu"
+              />
+            </a-form-item>
+          </a-col>
+          <a-col :span="12">
+            <a-form-item label="Chức năng" name="role">
+              <a-select
+                name="role"
+                id="role"
+                v-model:value="account.role"
+                class="form-account-input"
+                style="text-align: left"
+              >
+                <a-select-option value="ADMIN">ADMIN</a-select-option>
+                <a-select-option value="TEACHER">TEACHER</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+        </a-row>
+      </a-form>
+      <template #extra>
+        <a-space>
+          <a-button type="primary" @click="addUser">Thêm</a-button>
+        </a-space>
+      </template>
+    </a-drawer>
+    <a-button type="primary" class="btn-add" @click="showDrawer">Thêm tài khoản</a-button>
+  </div>
 </template>
 
 <script>
@@ -61,7 +62,7 @@ import { createToast } from "mosha-vue-toastify";
 export default {
   props: {
     listAccount: Array,
-    current: Number
+    current: Number,
   },
   setup(props) {
     const account = ref({
@@ -69,7 +70,14 @@ export default {
       password: "",
       role: "",
     });
+    const visible = ref(false);
+    const showDrawer = () => {
+      visible.value = true;
+    };
 
+    const onClose = () => {
+      visible.value = false;
+    };
     const addUser = (e) => {
       e.preventDefault();
       if (getData(ACCESS_TOKEN, "")) {
@@ -96,15 +104,19 @@ export default {
                   timeout: 1500,
                 });
                 props.listAccount.push({
-                  key: (props.listAccount.length + ((props.current - 1) * 10)).toString(),
-                  stt: (props.listAccount.length + ((props.current - 1) * 10)),
-                  ...res.data.data
+                  key: (
+                    props.listAccount.length +
+                    (props.current - 1) * 10
+                  ).toString(),
+                  stt: props.listAccount.length + (props.current - 1) * 10,
+                  ...res.data.data,
                 });
                 account.value = {
                   username: "",
                   password: "",
                   role: "",
                 };
+                visible.value = false;
               } else {
                 createToast(res.data.message, {
                   type: "danger",
@@ -125,6 +137,9 @@ export default {
     return {
       account,
       addUser,
+      visible,
+      showDrawer,
+      onClose,
     };
   },
 };
