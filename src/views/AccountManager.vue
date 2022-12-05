@@ -29,22 +29,26 @@
         <template #operation="{ record }">
           <div class="editable-row-group">
             <div class="editable-row-operations">
-              <span v-if="editableData[record.key]">
-                <div class="editable-row-group">
-                  <a-button @click="save(record.key)">Save</a-button>
-                  <a-popconfirm
-                    title="Sure to cancel?"
-                    @confirm="cancel(record.key)"
-                  >
-                    <a-button type="danger">Cancel</a-button>
-                  </a-popconfirm>
-                </div>
-              </span>
-              <span v-else>
-                <a-button type="primary" @click="edit(record.key)"
-                  >Sửa</a-button
+              <div class="editable-row-group">
+                <a-button type="primary" @click="showModal(record)"
+                  >Đổi mật khẩu
+                </a-button>
+                <a-modal
+                  v-model:visible="visibleModal"
+                  title="Thay đổi mật khẩu"
+                  @ok="handleOk"
                 >
-              </span>
+                  <a-input-password
+                    placeholder="Mậu khẩu cũ"
+                    v-model:value="password.old_password"
+                    style="margin-bottom: 20px"
+                  ></a-input-password>
+                  <a-input-password
+                    placeholder="Mậu khẩu mới"
+                    v-model:value="password.new_password"
+                  ></a-input-password>
+                </a-modal>
+              </div>
             </div>
             <div class="editable-row-operations">
               <a-popconfirm
@@ -70,12 +74,15 @@
 
 <script>
 import axios from "axios";
-import { ref, onMounted, reactive } from "vue";
+import { ref, onMounted } from "vue";
+
 import { environment, ENDPOINT } from "../shared/config/index";
 import { getData } from "../shared/common/common";
 import { ACCESS_TOKEN } from "../shared/constant/constant";
+
 import AddAccount from "../components/AddAccount.vue";
 import { createToast } from "mosha-vue-toastify";
+
 export default {
   components: {
     AddAccount,
@@ -85,6 +92,65 @@ export default {
     const totalPage = ref(1);
     const listAccount = ref([]);
     const current = ref(1);
+    const isRequestAPI = ref(false);
+    const password = ref({
+      id: "",
+      new_password: "",
+      old_password: "",
+    });
+
+    // show modal change password
+    const visibleModal = ref(false);
+    const showModal = (user) => {
+      password.value.id = user.id;
+      visibleModal.value = true;
+    };
+    const handleOk = () => {
+      if (!isRequestAPI.value) {
+        if (getData(ACCESS_TOKEN, "")) {
+          isRequestAPI.value = true;
+          const config = {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: getData(ACCESS_TOKEN, ""),
+            },
+          };
+          const data = { ...password.value };
+          delete data.id;
+          axios
+            .put(
+              `${environment.API_URL}${ENDPOINT.auth.changePass}/${password.value.id}`,
+              JSON.stringify(data),
+              config
+            )
+            .then((res) => {
+              if (res.data.success) {
+                createToast(res.data.message, {
+                  type: "success",
+                  timeout: 1500,
+                });
+                visibleModal.value = false;
+                password.value = {
+                  id: "",
+                  new_password: "",
+                  old_password: "",
+                };
+              } else {
+                createToast(res.data.message, {
+                  type: "danger",
+                  timeout: 1500,
+                });
+              }
+            })
+            .catch((err) => {
+              createToast("Update failed.", {
+                type: "danger",
+                timeout: 1500,
+              });
+            });
+        }
+      }
+    };
 
     const columns = [
       {
@@ -96,16 +162,13 @@ export default {
       {
         title: "Tài khoản",
         dataIndex: "username",
-        className: "text-center",
-      },
-      {
-        title: "Mật khẩu",
-        dataIndex: "password",
+        width: "30%",
         className: "text-center",
       },
       {
         title: "Loại",
         dataIndex: "role",
+        width: "30%",
         className: "text-center",
       },
       {
@@ -117,15 +180,14 @@ export default {
         className: "text-center",
       },
     ];
-    const editableData = reactive({});
 
     const getListAccount = (page, pageSize) => {
-      const config = {
-        headers: {
-          Authorization: getData(ACCESS_TOKEN, ""),
-        },
-      };
       if (getData(ACCESS_TOKEN, "")) {
+        const config = {
+          headers: {
+            Authorization: getData(ACCESS_TOKEN, ""),
+          },
+        };
         axios
           .get(
             `${environment.API_URL}${ENDPOINT.users.index}?page=${page}&page-size=${pageSize}`,
@@ -135,10 +197,7 @@ export default {
             listAccount.value = res.data.data.map((item, index) => ({
               key: (index + (current.value - 1) * 10).toString(),
               stt: index + (current.value - 1) * 10,
-              id: item.id,
-              username: item.username,
-              password: item.password,
-              role: item.role,
+              ...item,
             }));
             totalPage.value = res.data.pagination.total_page;
           })
@@ -151,58 +210,6 @@ export default {
     onMounted(() => {
       getListAccount(0, 10);
     });
-
-    const edit = (key) => {
-      editableData[key] = {
-        ...listAccount.value.filter((item) => key === item.key)[0],
-      };
-    };
-
-    const save = (key) => {
-      Object.assign(
-        listAccount.value.filter((item) => key === item.key)[0],
-        editableData[key]
-      );
-      const user = {
-        ...editableData[key],
-        name: editableData[key].username,
-        status: "ACTIVE",
-      };
-      delete user.key;
-      delete user.stt;
-
-      if (getData(ACCESS_TOKEN, "")) {
-        const config = {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: getData(ACCESS_TOKEN, ""),
-          },
-        };
-        axios
-          .put(
-            `${environment.API_URL}${ENDPOINT.users.index}/${user.id}`,
-            JSON.stringify(user),
-            config
-          )
-          .then((res) => {
-            createToast(res.data.message, {
-              type: "success",
-              timeout: 1500,
-            });
-          })
-          .catch((err) => {
-            createToast("Update failed.", {
-              type: "danger",
-              timeout: 1500,
-            });
-          });
-      }
-      delete editableData[key];
-    };
-
-    const cancel = (key) => {
-      delete editableData[key];
-    };
 
     const onDelete = (key) => {
       const user = listAccount.value.find((item) => item.key == key);
@@ -245,13 +252,13 @@ export default {
       listAccount,
       getListAccount,
       columns,
-      edit,
-      save,
-      cancel,
-      editableData,
       onDelete,
       onChange,
       current,
+      visibleModal,
+      handleOk,
+      showModal,
+      password,
     };
   },
 };

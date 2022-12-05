@@ -45,7 +45,7 @@
                 <a-modal
                   v-model:visible="visibleModal"
                   title="Nhập"
-                  @ok="handleOk(record)"
+                  @ok="handleOk"
                 >
                   <a-input
                     placeholder="Nơi thực tập"
@@ -107,6 +107,17 @@ export default {
     const isRequestAPIs = ref(false);
     const searchStudent = ref("");
     const internshipPlace = ref("");
+    const student = ref({
+      id: "",
+      name: "",
+      studentCode: "",
+      className: "",
+      teacherId: "",
+      internshipPlace: "",
+      graduationTopic: "",
+      internshipId: "",
+      graduationId: "",
+    });
     const indicator = h(LoadingOutlined, {
       style: {
         fontSize: "36px",
@@ -165,11 +176,13 @@ export default {
     };
 
     const visibleModal = ref(false);
-    const showModal = (student) => {
-      internshipPlace.value = student.internshipPlace;
+    const showModal = (record) => {
+      student.value = record;
+      internshipPlace.value = record.internshipPlace;
       visibleModal.value = true;
     };
-    const handleOk = (student) => {
+    
+    const handleOk = () => {
       if (!isRequestAPI.value) {
         if (getData(ACCESS_TOKEN, "")) {
           isRequestAPI.value = true;
@@ -180,16 +193,18 @@ export default {
             },
           };
           const data = {
-            ...student,
+            ...student.value,
             internshipPlace: internshipPlace.value,
           };
+
           delete data.key;
           delete data.stt;
           delete data.semester;
           delete data.year;
+
           axios
             .put(
-              `${environment.API_URL}${ENDPOINT.students.index}/${student.id}`,
+              `${environment.API_URL}${ENDPOINT.students.index}/${student.value.id}`,
               JSON.stringify(data),
               config
             )
@@ -200,12 +215,14 @@ export default {
                   timeout: 1500,
                 });
                 const studentIdx = listStudent.value.findIndex(
-                  (item) => item.id === student.id
+                  (item) => item.id == res.data.data.id
                 );
+
                 listStudent.value[studentIdx] = {
                   ...listStudent.value[studentIdx],
-                  internshipPlace: res.data.data.internshipPlace  ,
+                  internshipPlace: res.data.data.internshipPlace,
                 };
+
                 isRequestAPI.value = false;
                 visibleModal.value = false;
               }
@@ -283,7 +300,7 @@ export default {
 
     const onDelete = (key) => {
       const student = listStudent.value.find((item) => item.key == key);
-
+      console.log(student);
       if (!isRequestAPI.value) {
         if (getData(ACCESS_TOKEN, "")) {
           isRequestAPI.value = true;

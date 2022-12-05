@@ -98,10 +98,6 @@ export const optionStatus = [
   {
     value: "CLOSE",
     label: "Close",
-  },
-  {
-    value: "ALL",
-    label: 'All'
   }
 ];
 

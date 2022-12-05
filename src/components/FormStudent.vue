@@ -37,44 +37,6 @@
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item label="Đợt thực tập" name="internshipId">
-              <a-select
-                v-model:value="student.internshipId"
-                placeholder="Chọn đợt thực tập"
-                :options="listInternship"
-                @change="handleChangeInternship"
-              >
-              </a-select>
-            </a-form-item>
-          </a-col>
-          <a-col :span="12">
-            <a-form-item label="Nơi thực tập" name="internshipPlace">
-              <a-input
-                v-model:value="student.internshipPlace"
-                placeholder="Nhập địa chỉ thực tập"
-              />
-            </a-form-item>
-          </a-col>
-          <a-col :span="12">
-            <a-form-item label="Đợt đồ án" name="graduationId">
-              <a-select
-                v-model:value="student.graduationId"
-                placeholder="Chọn đợt đồ án"
-                :options="listGraduation"
-                @change="handleChangeGraduation"
-              >
-              </a-select>
-            </a-form-item>
-          </a-col>
-          <a-col :span="12">
-            <a-form-item label="Đề tài" name="graduationTopic">
-              <a-input
-                v-model:value="student.graduationTopic"
-                placeholder="Nhập đề tài đồ án"
-              />
-            </a-form-item>
-          </a-col>
-          <a-col :span="12">
             <a-form-item label="Giáo viên hướng dẫn" name="teacher">
               <a-select
                 v-model:value="student.teacherId"
@@ -130,18 +92,16 @@ export default {
     const isVisible = toRef(props, "visible");
     const isEdit = toRef(props, "isEdit");
     const listTeacher = toRef(props, "listTeacher");
-    const listInternship = ref([]);
-    const listGraduation = ref([]);
 
     const student = ref({
       className: "",
-      internshipId: "",
+      internshipId: 0,
       internshipPlace: "",
       name: "",
       studentCode: "",
       graduationTopic: "",
       teacherId: "",
-      graduationId: "",
+      graduationId: 0,
     });
 
     const onClose = () => {
@@ -281,57 +241,7 @@ export default {
       }
     };
 
-    const getListInternship = () => {
-      if (getData(ACCESS_TOKEN, "")) {
-        const config = {
-          headers: {
-            Authorization: getData(ACCESS_TOKEN, ""),
-          },
-        };
-        axios
-          .get(
-            `${environment.API_URL}${ENDPOINT.semesters.type}?page=0&page-size=${PAGE_SIZE_LARGE}&type=INTERNSHIP`,
-            config
-          )
-          .then((res) => {
-            listInternship.value = res.data.data.map((item) => ({
-              value: item.id,
-              label: item.semester,
-            }));
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      }
-    };
-
-    const getListGraduation = () => {
-      if (getData(ACCESS_TOKEN, "")) {
-        const config = {
-          headers: {
-            Authorization: getData(ACCESS_TOKEN, ""),
-          },
-        };
-        axios
-          .get(
-            `${environment.API_URL}${ENDPOINT.semesters.type}?page=0&page-size=${PAGE_SIZE_LARGE}&type=GRADUATION`,
-            config
-          )
-          .then((res) => {
-            listGraduation.value = res.data.data.map((item) => ({
-              value: item.id,
-              label: item.semester,
-            }));
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      }
-    };
-
     onMounted(() => {
-      getListInternship();
-      getListGraduation();
       if (isEdit.value.id) {
         getStudentById(isEdit.value.id);
       }
@@ -349,8 +259,6 @@ export default {
       addStudent,
       editStudent,
       handleChangeTeacher,
-      listInternship,
-      listGraduation,
       handleChangeInternship,
       handleChangeGraduation,
     };

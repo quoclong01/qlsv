@@ -46,7 +46,7 @@
                 <a-modal
                   v-model:visible="visibleModal"
                   title="Nhập"
-                  @ok="handleOk(record)"
+                  @ok="handleOk"
                 >
                   <a-row :gutter="[16, 16]">
                     <a-col :span="12">
@@ -141,6 +141,17 @@ export default {
       },
       spin: true,
     });
+     const student = ref({
+      id: "",
+      name: "",
+      studentCode: "",
+      className: "",
+      teacherId: "",
+      internshipPlace: "",
+      graduationTopic: "",
+      internshipId: "",
+      graduationId: "",
+    });
     const columns = [
       {
         title: "STT",
@@ -189,9 +200,10 @@ export default {
     };
     // show modal
     const visibleModal = ref(false);
-    const showModal = (student) => {
-      graduation.value.graduationTopic = student.graduationTopic;
-      graduation.value.teacherId = student.teacherId;
+    const showModal = (record) => {
+      student.value = record;
+      graduation.value.graduationTopic = record.graduationTopic;
+      graduation.value.teacherId = record.teacherId;
       visibleModal.value = true;
     };
 
@@ -364,7 +376,7 @@ export default {
       }
     };
 
-    const handleOk = (student) => {
+    const handleOk = () => {
       if (!isRequestAPI.value) {
         if (getData(ACCESS_TOKEN, "")) {
           isRequestAPI.value = true;
@@ -375,7 +387,7 @@ export default {
             },
           };
           const data = {
-            ...student,
+            ...student.value,
             graduationTopic: graduation.value.graduationTopic,
             teacherId: graduation.value.teacherId,
           };
@@ -385,7 +397,7 @@ export default {
 
           axios
             .put(
-              `${environment.API_URL}${ENDPOINT.students.index}/${student.id}`,
+              `${environment.API_URL}${ENDPOINT.students.index}/${student.value.id}`,
               JSON.stringify(data),
               config
             )
@@ -396,7 +408,7 @@ export default {
                   timeout: 1500,
                 });
                 const studentIdx = listStudent.value.findIndex(
-                  (item) => item.id === student.id
+                  (item) => item.id === res.data.data.id
                 );
                 listStudent.value[studentIdx] = {
                   ...listStudent.value[studentIdx],

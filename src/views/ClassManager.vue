@@ -189,13 +189,16 @@ export default {
               config
             )
             .then((res) => {
-              listSemester.value = res.data.data.map((item, index) => ({
-                key: (index + (current.value - 1) * 10).toString(),
-                stt: index + (current.value - 1) * 10,
-                ...item,
-              }));
-              totalPage.value = res.data.pagination.total_page;
-              isRequestAPI.value = false;
+              if (res.data.success) {
+                listSemester.value = res.data.data.map((item, index) => ({
+                  key: (index + (current.value - 1) * 10).toString(),
+                  stt: index + (current.value - 1) * 10,
+                  ...item,
+                }));
+                console.log(res.data.data);
+                totalPage.value = res.data.pagination.total_page;
+                isRequestAPI.value = false;
+              }
             })
             .catch((err) => {
               isRequestAPI.value = false;
@@ -260,7 +263,7 @@ export default {
           },
         };
         const newSemester = { ...semester };
-
+        
         delete newSemester.stt;
         delete newSemester.key;
         axios
@@ -270,11 +273,14 @@ export default {
             config
           )
           .then((res) => {
-            createToast(res.data.message, {
-              type: "success",
-              timeout: 1500,
-            });
-            listSemester.value[semesterIndex] = { ...semester };
+            if (res.data.success) {
+              createToast(res.data.message, {
+                type: "success",
+                timeout: 1500,
+              });
+              console.log(res.data.data);
+              listSemester.value[semesterIndex] = { ...semester };
+            }
           })
           .catch((err) => {
             createToast("Update failed.", {
@@ -286,7 +292,11 @@ export default {
     };
 
     const handleChangeYear = (value) => {
-      searchSemester.value.year = value.$y.toString();
+      if (value) {
+        searchSemester.value.year = value.$y.toString();
+      } else {
+        searchSemester.value.year = "";
+      }
     };
 
     const handleChangeType = (value) => {
@@ -311,9 +321,9 @@ export default {
               `${environment.API_URL}${
                 ENDPOINT.semesters.search
               }?page=${page}&page-size=${pageSize}${
-                searchSemester.value.status.includes("ALL")
-                  ? ""
-                  : `&status=${searchSemester.value.status}`
+                searchSemester.value.status
+                  ? `&status=${searchSemester.value.status}`
+                  : ""
               }&type=INTERNSHIP${
                 searchSemester.value.year
                   ? `&year=${searchSemester.value.year}`
@@ -354,6 +364,7 @@ export default {
       optionStatus,
       isRequestAPI,
       indicator,
+      searchSemester,
     };
   },
 }; //export

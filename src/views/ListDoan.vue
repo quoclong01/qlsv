@@ -191,13 +191,15 @@ export default {
               config
             )
             .then((res) => {
-              listSemester.value = res.data.data.map((item, index) => ({
-                key: (index + (current.value - 1) * 10).toString(),
-                stt: index + (current.value - 1) * 10,
-                ...item,
-              }));
-              isRequestAPI.value = false;
-              totalPage.value = res.data.pagination.total_page;
+              if (res.data.success) {
+                listSemester.value = res.data.data.map((item, index) => ({
+                  key: (index + (current.value - 1) * 10).toString(),
+                  stt: index + (current.value - 1) * 10,
+                  ...item,
+                }));
+                isRequestAPI.value = false;
+                totalPage.value = res.data.pagination.total_page;
+              }
             })
             .catch((err) => {
               isRequestAPI.value = false;
@@ -288,7 +290,11 @@ export default {
     };
 
     const handleChangeYear = (value) => {
-      searchSemester.value.year = value.$y.toString();
+      if (value) {
+        searchSemester.value.year = value.$y.toString();
+      } else {
+        searchSemester.value.year = "";
+      }
     };
 
     const handleChangeType = (value) => {
