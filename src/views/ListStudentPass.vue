@@ -108,7 +108,7 @@ import { useRoute } from "vue-router";
 
 import { environment, ENDPOINT } from "../shared/config/index";
 import { getData, getDataById } from "../shared/common/common";
-import { ACCESS_TOKEN } from "../shared/constant/constant";
+import { ACCESS_TOKEN, PAGE_SIZE_LARGE } from "../shared/constant/constant";
 
 import FormGraduation from "../components/FormGraduation.vue";
 import { createToast } from "mosha-vue-toastify";
@@ -250,7 +250,7 @@ export default {
         };
         axios
           .get(
-            `${environment.API_URL}${ENDPOINT.users.index}?page=0&page-size=1000`,
+            `${environment.API_URL}${ENDPOINT.users.index}?page=0&page-size=${PAGE_SIZE_LARGE}`,
             config
           )
           .then((res) => {
@@ -413,10 +413,11 @@ export default {
                 listStudent.value[studentIdx] = {
                   ...listStudent.value[studentIdx],
                   graduationTopic: res.data.data.graduationTopic,
-                  teacherId: getDataById(
+                  teacher: getDataById(
                     listTeacher.value,
                     res.data.data.teacherId
                   ),
+                  teacherId: res.data.data.teacherId
                 };
                 isRequestAPI.value = false;
                 visibleModal.value = false;

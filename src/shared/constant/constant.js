@@ -98,7 +98,7 @@ export const optionStatus = [
   {
     value: "CLOSE",
     label: "Close",
-  }
+  },
 ];
 
 export const columnStudentIntership = [
@@ -135,5 +135,38 @@ export const columnStudentIntership = [
     slots: {
       customRender: "operation",
     },
+  },
+];
+
+export const columnSemester = [
+  {
+    title: "STT",
+    dataIndex: "stt",
+    width: "5%",
+    className: "text-center",
+  },
+  {
+    title: "Đợt",
+    dataIndex: "semester",
+    width: "22%",
+    className: "text-center",
+  },
+  {
+    title: "Năm học",
+    dataIndex: "year",
+    width: "22%",
+    className: "text-center",
+  },
+  {
+    title: "Trạng thái",
+    dataIndex: "status",
+    width: "22%",
+    className: "text-center",
+  },
+  {
+    title: "Chức năng",
+    dataIndex: "operation",
+    width: "22%",
+    className: "text-center",
   },
 ];

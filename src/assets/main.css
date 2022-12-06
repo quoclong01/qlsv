@@ -295,3 +295,7 @@ td.text-center {
 .ant-col.ant-form-item-control {
   width: 100%!important;  
 }
+
+.mb-30 {
+  margin-bottom: 30px;
+}

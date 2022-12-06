@@ -65,15 +65,14 @@ const router = createRouter({
           component: () => import("../views/users/EvaluationTT.vue"),
         },
         {
-          path: "/nhap2",
-          name: "nhap2",
-          component: () => import("../components/Nhap2.vue"),
+          path: "/evaluationtt/:id",
+          name: "EvaluationStudentTT",
+          component: () => import("../views/users/EvaluationStudentTT.vue"),
         },
-
         {
-          path: "/feedback",
-          name: "feedback",
-          component: () => import("../views/Feedback.vue"),
+          path: "/evaluationtt/feedback/:id",
+          name: "EvaluationFeedbackTT",
+          component: () => import("../views/users/EvaluationFeedbackTT.vue"),
         },
         {
           path: "/evaluationda",
@@ -81,15 +80,15 @@ const router = createRouter({
           component: () => import("../views/users/EvaluationDA.vue"),
         },
         {
-          path: "/feedbacktopic",
-          name: "feedbacktopic",
-          component: () => import("../components/FeedbackTopic.vue"),
+          path: "/evaluationda/:id",
+          name: "EvaluationStudentDA",
+          component: () => import("../views/users/EvaluationStudentDA.vue"),
         },
         {
-          path: "/feedbacktopics",
-          name: "feedbacktopics",
-          component: () => import("../views/FeedbackTopics.vue"),
-        },
+          path: "/evaluationda/feedback/:id",
+          name: "EvaluationFeedbackDA",
+          component: () => import("../views/users/EvaluationFeedbackDA.vue"),
+        }
       ],
     },
   ],

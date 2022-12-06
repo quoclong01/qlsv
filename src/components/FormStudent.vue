@@ -75,7 +75,6 @@ import { getData, getDataById } from "../shared/common/common";
 import {
   ACCESS_TOKEN,
   listClassName,
-  PAGE_SIZE_LARGE,
 } from "../shared/constant/constant";
 
 import { createToast } from "mosha-vue-toastify";

@@ -110,6 +110,7 @@ export default {
     };
 
     const getListStudent = (page, pageSize, name) => {
+      console.log('get')
       if (!isRequestAPI.value) {
         if (getData(ACCESS_TOKEN, "")) {
           isRequestAPI.value = true;
@@ -131,6 +132,7 @@ export default {
                   ...item,
                   teacher: getDataById(listTeacher.value, item.teacherId),
                 }));
+                console.log(res.data.data)
                 isRequestAPI.value = false;
                 totalPage.value = res.data.pagination.total_page;
               }

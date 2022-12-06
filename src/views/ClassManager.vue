@@ -195,7 +195,7 @@ export default {
                   stt: index + (current.value - 1) * 10,
                   ...item,
                 }));
-                console.log(res.data.data);
+                
                 totalPage.value = res.data.pagination.total_page;
                 isRequestAPI.value = false;
               }
