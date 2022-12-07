@@ -80,12 +80,6 @@
                     Mở
                   </a-button>
                 </div>
-                <a-popconfirm
-                  title="Bạn muốn xóa đợt thực tập không?"
-                  @confirm="handleDelete(record.key)"
-                >
-                  <a-button type="danger">Xóa</a-button>
-                </a-popconfirm>
                 <a-button type="primary" class="btn-secondary"
                   ><router-link
                     :to="{
@@ -212,38 +206,6 @@ export default {
       getListSemeters(0, 10);
     });
 
-    const handleDelete = (key) => {
-      const semester = listSemester.value.find((item) => item.key == key);
-
-      if (getData(ACCESS_TOKEN, "")) {
-        const config = {
-          headers: {
-            Authorization: getData(ACCESS_TOKEN, ""),
-          },
-        };
-        axios
-          .delete(
-            `${environment.API_URL}${ENDPOINT.semesters.index}/${semester.id}`,
-            config
-          )
-          .then((res) => {
-            createToast(res.data.message, {
-              type: "success",
-              timeout: 1500,
-            });
-            listSemester.value = listSemester.value.filter(
-              (item) => item.key !== key
-            );
-          })
-          .catch((err) => {
-            createToast("Delete failed.", {
-              type: "danger",
-              timeout: 1500,
-            });
-          });
-      }
-    };
-
     const onChange = (page, pageSize) => {
       getListSemeters(page - 1, pageSize);
     };
@@ -354,7 +316,6 @@ export default {
       columns,
       listSemester,
       current,
-      handleDelete,
       onChange,
       totalPage,
       handleStatus,

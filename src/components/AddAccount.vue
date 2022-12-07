@@ -21,7 +21,15 @@
             <a-form-item label="Mật khẩu" name="password">
               <a-input-password
                 v-model:value="account.password"
-                placeholder="Nhập mật khảu"
+                placeholder="Nhập mật khẩu"
+              />
+            </a-form-item>
+          </a-col>
+          <a-col :span="12">
+            <a-form-item label="Họ và tên" name="name">
+              <a-input
+                v-model:value="account.name"
+                placeholder="Nhập họ và tên"
               />
             </a-form-item>
           </a-col>
@@ -47,7 +55,9 @@
         </a-space>
       </template>
     </a-drawer>
-    <a-button type="primary" class="btn-add" @click="showDrawer">Thêm tài khoản</a-button>
+    <a-button type="primary" class="btn-add" @click="showDrawer"
+      >Thêm tài khoản</a-button
+    >
   </div>
 </template>
 
@@ -68,6 +78,7 @@ export default {
     const account = ref({
       username: "",
       password: "",
+      name: "",
       role: "",
     });
     const visible = ref(false);
@@ -83,7 +94,6 @@ export default {
       if (getData(ACCESS_TOKEN, "")) {
         const data = {
           ...account.value,
-          name: account.value.username,
         };
         const config = {
           headers: {
@@ -93,7 +103,7 @@ export default {
         if (
           account.value.username ||
           account.value.password ||
-          account.value.role
+          account.value.name
         ) {
           axios
             .post(`${environment.API_URL}${ENDPOINT.users.index}`, data, config)
@@ -115,6 +125,7 @@ export default {
                   username: "",
                   password: "",
                   role: "",
+                  name: "",
                 };
                 visible.value = false;
               } else {

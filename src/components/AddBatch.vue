@@ -30,13 +30,14 @@
                 style="width: 100%"
                 picker="year"
                 @change="handleChangeYear"
+                placeholder="Chọn năm học"
               />
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item label="Năm học" name="year">
+            <a-form-item label="Trạng thái" name="year">
               <a-select
-                placeholder="Select a status"
+                placeholder="Chọn trạng thái"
                 show-search
                 :options="optionStatus"
                 @change="handleChangeType"

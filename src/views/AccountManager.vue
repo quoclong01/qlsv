@@ -155,6 +155,7 @@ export default {
                   type: "success",
                   timeout: 1500,
                 });
+                isRequestAPI.value = false;
                 visibleModal.value = false;
                 password.value = {
                   id: "",
@@ -169,6 +170,7 @@ export default {
               }
             })
             .catch((err) => {
+              isRequestAPI.value = false;
               createToast("Update failed.", {
                 type: "danger",
                 timeout: 1500,
@@ -185,16 +187,23 @@ export default {
         width: "5%",
         className: "text-center",
       },
+      ,
+      {
+        title: "Họ và tên",
+        dataIndex: "name",
+        width: "25%",
+        className: "text-center",
+      },
       {
         title: "Tài khoản",
         dataIndex: "username",
-        width: "30%",
+        width: "25%",
         className: "text-center",
       },
       {
         title: "Loại",
         dataIndex: "role",
-        width: "30%",
+        width: "25%",
         className: "text-center",
       },
       {
@@ -208,28 +217,34 @@ export default {
     ];
 
     const getListAccount = (page, pageSize) => {
-      if (getData(ACCESS_TOKEN, "")) {
-        const config = {
-          headers: {
-            Authorization: getData(ACCESS_TOKEN, ""),
-          },
-        };
-        axios
-          .get(
-            `${environment.API_URL}${ENDPOINT.users.index}?page=${page}&page-size=${pageSize}`,
-            config
-          )
-          .then((res) => {
-            listAccount.value = res.data.data.map((item, index) => ({
-              key: (index + (current.value - 1) * 10).toString(),
-              stt: index + (current.value - 1) * 10,
-              ...item,
-            }));
-            totalPage.value = res.data.pagination.total_page;
-          })
-          .catch((err) => {
-            console.log(err);
-          });
+      if (!isRequestAPI.value) {
+        if (getData(ACCESS_TOKEN, "")) {
+          isRequestAPI.value = true;
+          const config = {
+            headers: {
+              Authorization: getData(ACCESS_TOKEN, ""),
+            },
+          };
+          axios
+            .get(
+              `${environment.API_URL}${ENDPOINT.users.index}?page=${page}&page-size=${pageSize}`,
+              config
+            )
+            .then((res) => {
+              if (res.data.success) {
+                listAccount.value = res.data.data.map((item, index) => ({
+                  key: (index + (current.value - 1) * 10).toString(),
+                  stt: index + (current.value - 1) * 10,
+                  ...item,
+                }));
+                totalPage.value = res.data.pagination.total_page;
+                isRequestAPI.value = false;
+              }
+            })
+            .catch((err) => {
+              isRequestAPI.value = false;
+            });
+        }
       }
     };
 
