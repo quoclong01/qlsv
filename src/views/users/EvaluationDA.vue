@@ -64,7 +64,6 @@ import { getData } from "../../shared/common/common";
 import {
   ACCESS_TOKEN,
   columnSemester,
-  PAGE_SIZE_LARGE,
   USER_INFO,
 } from "../../shared/constant/constant";
 

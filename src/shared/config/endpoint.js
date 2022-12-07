@@ -24,8 +24,10 @@ export const ENDPOINT = {
   },
   students: {
     index: `${RESOURCES.students}`,
+    addSemester: `${RESOURCES.students}/add-semester`
   },
   users: {
     index: `${RESOURCES.users}`,
+    search: `${RESOURCES.users}/search`
   },
 };

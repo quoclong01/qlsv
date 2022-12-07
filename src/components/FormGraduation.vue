@@ -142,7 +142,7 @@ export default {
             ...student,
             graduationTopic: graduation.value.graduationTopic,
             teacherId: graduation.value.teacherId,
-            graduationId: id
+            graduationId: id,
           };
           delete data.key;
           delete data.stt;
@@ -165,7 +165,10 @@ export default {
                   ).toString(),
                   stt: props.listStudent.length + (props.current - 1) * 10,
                   ...res.data.data,
-                  teacher: getDataById(listTeacher.value, res.data.data.teacherId),
+                  teacher: getDataById(
+                    listTeacher.value,
+                    res.data.data.teacherId
+                  ),
                 });
                 listStudentGraduation.value =
                   listStudentGraduation.value.filter(
@@ -200,18 +203,18 @@ export default {
           };
           axios
             .get(
-              `${environment.API_URL}${ENDPOINT.students.index}?page=${page}&page-size=${pageSize}`,
+              `${environment.API_URL}${ENDPOINT.students.addSemester}?page=${page}&page-size=${pageSize}&type=GRADUATION`,
               config
             )
             .then((res) => {
               if (res.data.success) {
-                listStudentGraduation.value = res.data.data
-                  .filter((item) => item.graduationId != id)
-                  .map((item, index) => ({
+                listStudentGraduation.value = res.data.data.map(
+                  (item, index) => ({
                     key: (index + (current.value - 1) * 10).toString(),
                     stt: index + (current.value - 1) * 10,
                     ...item,
-                  }));
+                  })
+                );
                 isRequestAPI.value = false;
                 totalPage.value = res.data.pagination.total_page;
               }

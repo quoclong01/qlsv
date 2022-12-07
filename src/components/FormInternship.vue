@@ -137,9 +137,10 @@ export default {
                   stt: props.listStudent.length + (props.current - 1) * 10,
                   ...res.data.data,
                 });
-                listStudentInternship.value = listStudentInternship.value.filter(
-                  (item) => item.id !== student.id
-                );
+                listStudentInternship.value =
+                  listStudentInternship.value.filter(
+                    (item) => item.id !== student.id
+                  );
 
                 isRequestAPI.value = false;
                 visibleModal.value = false;
@@ -170,18 +171,18 @@ export default {
           };
           axios
             .get(
-              `${environment.API_URL}${ENDPOINT.students.index}?page=${page}&page-size=${pageSize}`,
+              `${environment.API_URL}${ENDPOINT.students.addSemester}?page=${page}&page-size=${pageSize}&type=INTERNSHIP`,
               config
             )
             .then((res) => {
               if (res.data.success) {
-                listStudentInternship.value = res.data.data
-                  .filter((item) => item.internshipId != id)
-                  .map((item, index) => ({
+                listStudentInternship.value = res.data.data.map(
+                  (item, index) => ({
                     key: (index + (current.value - 1) * 10).toString(),
                     stt: index + (current.value - 1) * 10,
                     ...item,
-                  }));
+                  })
+                );
                 isRequestAPI.value = false;
                 totalPage.value = res.data.pagination.total_page;
               }
