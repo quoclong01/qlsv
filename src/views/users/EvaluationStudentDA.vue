@@ -18,15 +18,60 @@
           <template #operation="{ record }">
             <div class="editable-row-group">
               <div class="editable-row-operations">
-                <a-button type="danger">
-                  <router-link
-                    :to="{
-                      name: 'EvaluationFeedbackDA',
-                      params: { id: record.id },
-                    }"
-                    >Đánh giá</router-link
-                  ></a-button
+                <a-button type="danger" @click="showModal(record.id)">
+                  Đánh giá
+                </a-button>
+                <a-modal
+                  v-model:visible="visibleModal"
+                  title="Bảng đánh giá"
+                  @ok="handleOk"
                 >
+                  <template #footer>
+                    <a-button key="back" @click="handleCancel">Cancel</a-button>
+                    <template v-if="isEdit.showInput">
+                      <a-button type="danger" @click="handleEdit"
+                        >Edit</a-button
+                      >
+                    </template>
+                    <template v-else>
+                      <a-button key="submit" type="primary" @click="handleOk"
+                        >Ok</a-button
+                      >
+                    </template>
+                  </template>
+                  <a-form layout="vertical">
+                    <a-row :gutter="16">
+                      <a-col :span="12">
+                        <a-form-item label="Tên đề tài" name="topic">
+                          <a-input
+                            placeholder="Nhập tên đề tài"
+                            v-model:value="feedback.topic"
+                            :disabled="isEdit.showInput"
+                          />
+                        </a-form-item>
+                      </a-col>
+                      <a-col :span="12">
+                        <a-form-item label="Điểm" name="mark">
+                          <a-input
+                            placeholder="Nhập điểm"
+                            v-model:value="feedback.mark"
+                            :disabled="isEdit.showInput"
+                          />
+                        </a-form-item>
+                      </a-col>
+                      <a-col :span="24">
+                        <a-form-item label="Ghi chú" name="note">
+                          <a-textarea
+                            v-model:value="feedback.note"
+                            placeholder="Nhập ghi chú"
+                            :rows="6"
+                            :disabled="isEdit.showInput"
+                          />
+                        </a-form-item>
+                      </a-col>
+                    </a-row>
+                  </a-form>
+                </a-modal>
               </div>
             </div>
           </template>
@@ -53,6 +98,7 @@ import { getData } from "../../shared/common/common";
 import { ACCESS_TOKEN, USER_INFO } from "../../shared/constant/constant";
 
 import { PlusOutlined, LoadingOutlined } from "@ant-design/icons-vue";
+import { createToast } from "mosha-vue-toastify";
 
 export default {
   components: {
@@ -113,6 +159,106 @@ export default {
         },
       },
     ];
+
+    const visibleModal = ref(false);
+    const isEdit = ref({
+      status: false,
+      showInput: false,
+    });
+
+    const showModal = (id) => {
+      getEvanluationById(id);
+    };
+
+    const feedback = ref({
+      id: "",
+      mark: "",
+      note: "",
+      studentId: "",
+      topic: "",
+      type: "GRADUATION",
+    });
+
+    const handleOk = () => {
+      if (!isRequestAPI.value) {
+        if (getData(ACCESS_TOKEN, "")) {
+          const config = {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: getData(ACCESS_TOKEN, ""),
+            },
+          };
+          isRequestAPI.value = true;
+          if (!isEdit.value.status) {
+            const data = { ...feedback.value };
+            delete data.id;
+            axios
+              .post(
+                `${environment.API_URL}${ENDPOINT.evaluations.index}`,
+                JSON.stringify(data),
+                config
+              )
+              .then((res) => {
+                if (res.data.success) {
+                  createToast(res.data.message, {
+                    type: "success",
+                    timeout: 1500,
+                  });
+                  visibleModal.value = false;
+                  isRequestAPI.value = false;
+                  feedback.value = {
+                    id: "",
+                    mark: "",
+                    note: "",
+                    studentId: "",
+                    topic: "",
+                    type: "GRADUATION",
+                  };
+                }
+              })
+              .catch((err) => {
+                isRequestAPI.value = false;
+                createToast("Added failed.", {
+                  type: "danger",
+                  timeout: 1500,
+                });
+              });
+          } else {
+            axios
+              .put(
+                `${environment.API_URL}${ENDPOINT.evaluations.index}/${feedback.value.id}`,
+                JSON.stringify(feedback.value),
+                config
+              )
+              .then((res) => {
+                if (res.data.success) {
+                  createToast(res.data.message, {
+                    type: "success",
+                    timeout: 1500,
+                  });
+                  visibleModal.value = false;
+                  isRequestAPI.value = false;
+                  feedback.value = {
+                    id: "",
+                    mark: "",
+                    note: "",
+                    studentId: "",
+                    topic: "",
+                    type: "GRADUTION",
+                  };
+                }
+              })
+              .catch((err) => {
+                isRequestAPI.value = false;
+                createToast("Update failed.", {
+                  type: "danger",
+                  timeout: 1500,
+                });
+              });
+          }
+        }
+      }
+    };
 
     const onChange = (page, pageSize) => {
       getListStudent(page - 1, pageSize);
@@ -176,6 +322,55 @@ export default {
       }
     };
 
+    const getEvanluationById = (id) => {
+      if (getData(ACCESS_TOKEN, "")) {
+        const config = {
+          headers: {
+            Authorization: getData(ACCESS_TOKEN, ""),
+          },
+        };
+        axios
+          .get(
+            `${environment.API_URL}${ENDPOINT.evaluations.student}/${id}?type=GRADUATION`,
+            config
+          )
+          .then((res) => {
+            if (res.data.success) {
+              feedback.value = {
+                ...res.data.data,
+              };
+              isEdit.value = {
+                status: true,
+                showInput: true,
+              };
+              visibleModal.value = true;
+            } else {
+              feedback.value.studentId = id;
+              visibleModal.value = true;
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+    };
+
+    const handleCancel = () => {
+      visibleModal.value = false;
+      feedback.value = {
+        id: "",
+        mark: "",
+        note: "",
+        studentId: "",
+        topic: "",
+        type: "GRADUTION",
+      };
+    };
+
+    const handleEdit = () => {
+      isEdit.value.showInput = false;
+    };
+
     onMounted(() => {
       if (getData(USER_INFO, {})) {
         userId.value = getData(USER_INFO, {}).id;
@@ -195,6 +390,13 @@ export default {
       indicator,
       listStudent,
       isRequestAPIs,
+      visibleModal,
+      showModal,
+      handleOk,
+      feedback,
+      isEdit,
+      handleCancel,
+      handleEdit,
     };
   },
 };

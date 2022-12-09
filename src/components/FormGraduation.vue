@@ -29,34 +29,13 @@
                   title="Thông tin đồ án"
                   @ok="handleOk(record)"
                 >
-                  <a-row :gutter="[16, 16]">
-                    <a-col :span="12">
-                      <a-form-item label="Tên đề tài" name="graduationId">
-                        <a-input
-                          placeholder="Nhập"
-                          v-model:value="graduation.graduationTopic"
-                        ></a-input>
-                      </a-form-item>
-                    </a-col>
-                    <a-col :span="12">
-                      <a-form-item
-                        label="Giáo viên hướng dẫn"
-                        name="teacherId"
-                        style="
-                          display: flex;
-                          align-items: flex-start;
-                          flex-direction: column;
-                        "
-                      >
-                        <a-select
-                          placeholder="Chọn"
-                          :options="listTeacher"
-                          @change="handleChangeTeacher"
-                        >
-                        </a-select>
-                      </a-form-item>
-                    </a-col>
-                  </a-row>
+                  <a-form-item label="Tên đề tài" name="graduationId">
+                    <a-input
+                      placeholder="Nhập tên đề tài"
+                      style="width: 100%"
+                      v-model:value="graduation.graduationTopic"
+                    ></a-input>
+                  </a-form-item>
                 </a-modal>
               </div>
             </div>
@@ -113,7 +92,6 @@ export default {
     const id = route.params.id;
     const isRequestAPI = ref(false);
     const graduation = ref({
-      teacherId: "",
       graduationTopic: "",
     });
 
@@ -141,7 +119,6 @@ export default {
           const data = {
             ...student,
             graduationTopic: graduation.value.graduationTopic,
-            teacherId: graduation.value.teacherId,
             graduationId: id,
           };
           delete data.key;

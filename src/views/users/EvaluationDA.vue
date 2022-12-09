@@ -57,7 +57,7 @@
 <script>
 import axios from "axios";
 import { ref, onMounted, h } from "vue";
-import { useStudentStore } from "../../stores/teacher";
+import { useStudentStore } from "../../stores";
 
 import { environment, ENDPOINT } from "../../shared/config/index";
 import { getData } from "../../shared/common/common";

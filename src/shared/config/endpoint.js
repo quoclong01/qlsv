@@ -10,6 +10,7 @@ export const ENDPOINT = {
   evaluations: {
     index: `${RESOURCES.evaluations}`,
     type: `${RESOURCES.evaluations}/type`,
+    student: `${RESOURCES.evaluations}/student`
   },
   auth: {
     index: `${RESOURCES.auth}`,

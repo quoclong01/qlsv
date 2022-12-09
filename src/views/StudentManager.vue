@@ -73,14 +73,14 @@ import { getData, getDataById } from "../shared/common/common";
 import { ACCESS_TOKEN, columnStudents } from "../shared/constant/constant";
 
 import { createToast } from "mosha-vue-toastify";
-import { LoadingOutlined } from '@ant-design/icons-vue';
+import { LoadingOutlined } from "@ant-design/icons-vue";
 
 import FormStudent from "../components/FormStudent.vue";
 
 export default {
   components: {
     FormStudent,
-    LoadingOutlined
+    LoadingOutlined,
   },
   setup() {
     const listStudent = ref([]);
@@ -97,7 +97,7 @@ export default {
     });
     const indicator = h(LoadingOutlined, {
       style: {
-        fontSize: '36px',
+        fontSize: "36px",
       },
       spin: true,
     });
@@ -110,7 +110,6 @@ export default {
     };
 
     const getListStudent = (page, pageSize, name) => {
-      console.log('get')
       if (!isRequestAPI.value) {
         if (getData(ACCESS_TOKEN, "")) {
           isRequestAPI.value = true;
@@ -121,7 +120,11 @@ export default {
           };
           axios
             .get(
-              `${environment.API_URL}${ENDPOINT.students.index}?page=${page}&page-size=${pageSize}${name ? `&name=${name}` : ''}`,
+              `${environment.API_URL}${
+                ENDPOINT.students.index
+              }?page=${page}&page-size=${pageSize}${
+                name ? `&name=${name}` : ""
+              }`,
               config
             )
             .then((res) => {
@@ -132,7 +135,6 @@ export default {
                   ...item,
                   teacher: getDataById(listTeacher.value, item.teacherId),
                 }));
-                console.log(res.data.data)
                 isRequestAPI.value = false;
                 totalPage.value = res.data.pagination.total_page;
               }
@@ -183,12 +185,12 @@ export default {
     };
 
     const getListTeacher = () => {
-      const config = {
-        headers: {
-          Authorization: getData(ACCESS_TOKEN, ""),
-        },
-      };
       if (getData(ACCESS_TOKEN, "")) {
+        const config = {
+          headers: {
+            Authorization: getData(ACCESS_TOKEN, ""),
+          },
+        };
         axios
           .get(
             `${environment.API_URL}${ENDPOINT.users.index}?page=0&page-size=1000`,
@@ -214,7 +216,7 @@ export default {
     });
 
     const onChange = (page, pageSize) => {
-      if(searchStudent.value) {
+      if (searchStudent.value) {
         getListStudent(page - 1, pageSize, searchStudent.value);
       } else {
         getListStudent(page - 1, pageSize);
@@ -247,7 +249,7 @@ export default {
       columnStudents,
       listTeacher,
       isRequestAPI,
-      indicator
+      indicator,
     };
   },
 };

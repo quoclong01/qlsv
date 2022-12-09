@@ -45,37 +45,15 @@
                 >
                 <a-modal
                   v-model:visible="visibleModal"
-                  title="Nhập"
+                  title="Thông tin đồ án"
                   @ok="handleOk"
                 >
-                  <a-row :gutter="[16, 16]">
-                    <a-col :span="12">
-                      <a-form-item label="Tên đề tài" name="graduationId">
-                        <a-input
-                          placeholder="Nhập"
-                          v-model:value="graduation.graduationTopic"
-                        ></a-input>
-                      </a-form-item>
-                    </a-col>
-                    <a-col :span="12">
-                      <a-form-item
-                        label="Giáo viên hướng dẫn"
-                        name="teacherId"
-                        style="
-                          display: flex;
-                          align-items: flex-start;
-                          flex-direction: column;
-                        "
-                      >
-                        <a-select
-                          placeholder="Chọn"
-                          :options="listTeacher"
-                          v-model:value="graduation.teacherId"
-                        >
-                        </a-select>
-                      </a-form-item>
-                    </a-col>
-                  </a-row>
+                  <a-form-item label="Tên đề tài" name="graduationId">
+                    <a-input
+                      placeholder="Nhập"
+                      v-model:value="graduation.graduationTopic"
+                    ></a-input>
+                  </a-form-item>
                 </a-modal>
               </div>
               <div class="editable-row-operations">
@@ -132,7 +110,6 @@ export default {
     const type = "graduation";
     const isRequestAPI = ref(false);
     const graduation = ref({
-      teacherId: "",
       graduationTopic: "",
     });
     const indicator = h(LoadingOutlined, {
@@ -141,7 +118,7 @@ export default {
       },
       spin: true,
     });
-     const student = ref({
+    const student = ref({
       id: "",
       name: "",
       studentCode: "",
@@ -203,7 +180,6 @@ export default {
     const showModal = (record) => {
       student.value = record;
       graduation.value.graduationTopic = record.graduationTopic;
-      graduation.value.teacherId = record.teacherId;
       visibleModal.value = true;
     };
 
@@ -389,7 +365,6 @@ export default {
           const data = {
             ...student.value,
             graduationTopic: graduation.value.graduationTopic,
-            teacherId: graduation.value.teacherId,
           };
           delete data.key;
           delete data.stt;
@@ -413,11 +388,7 @@ export default {
                 listStudent.value[studentIdx] = {
                   ...listStudent.value[studentIdx],
                   graduationTopic: res.data.data.graduationTopic,
-                  teacher: getDataById(
-                    listTeacher.value,
-                    res.data.data.teacherId
-                  ),
-                  teacherId: res.data.data.teacherId
+                  teacherId: res.data.data.teacherId,
                 };
                 isRequestAPI.value = false;
                 visibleModal.value = false;

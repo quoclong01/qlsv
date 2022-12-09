@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import { useStudentStore } from "../../stores/teacher";
+import { useStudentStore } from "../../stores";
 import axios from "axios";
 import { ref, onMounted, h } from "vue";
 

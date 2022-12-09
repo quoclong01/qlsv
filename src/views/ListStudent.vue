@@ -20,6 +20,7 @@
         v-model:visible="visible"
         :listStudent="listStudent"
         :current="current"
+        :semester="semester"
       />
     </template>
     <template v-if="isRequestAPI || isRequestAPIs">
@@ -44,13 +45,15 @@
                 >
                 <a-modal
                   v-model:visible="visibleModal"
-                  title="Nhập"
+                  title="Thông tin thực tập"
                   @ok="handleOk"
                 >
-                  <a-input
-                    placeholder="Nơi thực tập"
-                    v-model:value="internshipPlace"
-                  ></a-input>
+                  <a-form-item label="Nơi thực tập" name="graduationId">
+                    <a-input
+                      placeholder="Nhập nơi thực tập"
+                      v-model:value="internshipPlace"
+                    ></a-input
+                  ></a-form-item>
                 </a-modal>
               </div>
               <div class="editable-row-operations">
@@ -181,7 +184,7 @@ export default {
       internshipPlace.value = record.internshipPlace;
       visibleModal.value = true;
     };
-    
+
     const handleOk = () => {
       if (!isRequestAPI.value) {
         if (getData(ACCESS_TOKEN, "")) {
@@ -300,7 +303,7 @@ export default {
 
     const onDelete = (key) => {
       const student = listStudent.value.find((item) => item.key == key);
-      console.log(student);
+
       if (!isRequestAPI.value) {
         if (getData(ACCESS_TOKEN, "")) {
           isRequestAPI.value = true;
@@ -430,6 +433,7 @@ export default {
       showModal,
       handleOk,
       internshipPlace,
+      semester,
     };
   },
 };

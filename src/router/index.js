@@ -70,11 +70,6 @@ const router = createRouter({
           component: () => import("../views/users/EvaluationStudentTT.vue"),
         },
         {
-          path: "/evaluationtt/feedback/:id",
-          name: "EvaluationFeedbackTT",
-          component: () => import("../views/users/EvaluationFeedbackTT.vue"),
-        },
-        {
           path: "/evaluationda",
           name: "evaluationda",
           component: () => import("../views/users/EvaluationDA.vue"),
@@ -84,11 +79,6 @@ const router = createRouter({
           name: "EvaluationStudentDA",
           component: () => import("../views/users/EvaluationStudentDA.vue"),
         },
-        {
-          path: "/evaluationda/feedback/:id",
-          name: "EvaluationFeedbackDA",
-          component: () => import("../views/users/EvaluationFeedbackDA.vue"),
-        }
       ],
     },
   ],

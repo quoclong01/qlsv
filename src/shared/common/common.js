@@ -8,7 +8,7 @@ export const setData = (key, value) => {
 };
 
 export const getDataById = (data, id) => {
-  if (id) {
+  if (id != 0) {
     return data.find((item) => item.value === id).label;
   }
   return "";

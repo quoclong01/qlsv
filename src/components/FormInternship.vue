@@ -26,13 +26,15 @@
                 <a-button type="primary" @click="showModal">Thêm</a-button>
                 <a-modal
                   v-model:visible="visibleModal"
-                  title="Nơi thực tập"
+                  title="Thông tin thực tập"
                   @ok="handleOk(record)"
                 >
-                  <a-input
-                    placeholder="Nhập"
-                    v-model:value="internshipPlace"
-                  ></a-input>
+                  <a-form-item label="Nơi thực tập" name="graduationId">
+                    <a-input
+                      placeholder="Nhập nơi thực tập"
+                      v-model:value="internshipPlace"
+                    ></a-input
+                  ></a-form-item>
                 </a-modal>
               </div>
             </div>
@@ -60,7 +62,6 @@ import { getData } from "../shared/common/common";
 import {
   ACCESS_TOKEN,
   columnStudentIntership,
-  PAGE_SIZE_LARGE,
 } from "../shared/constant/constant";
 
 import { createToast } from "mosha-vue-toastify";
@@ -77,9 +78,11 @@ export default {
     visible: Boolean,
     listStudent: Array,
     current: Number,
+    semester: Object,
   },
   setup(props, { emit }) {
     const isVisible = toRef(props, "visible");
+    const semester = toRef(props, "semester");
     const listStudentInternship = ref([]);
     const route = useRoute();
     const current = ref(1);
@@ -136,6 +139,8 @@ export default {
                   ).toString(),
                   stt: props.listStudent.length + (props.current - 1) * 10,
                   ...res.data.data,
+                  semester: semester.value.semester,
+                  year: semester.value.year,
                 });
                 listStudentInternship.value =
                   listStudentInternship.value.filter(
@@ -221,6 +226,7 @@ export default {
       showModal,
       handleOk,
       internshipPlace,
+      semester,
     };
   },
 };
