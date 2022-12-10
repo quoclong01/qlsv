@@ -180,6 +180,21 @@ export default {
       type: "GRADUATION",
     });
 
+    const resetData = () => {
+      feedback.value = {
+        id: "",
+        mark: "",
+        note: "",
+        studentId: "",
+        topic: "",
+        type: "GRADUATION",
+      };
+      isEdit.value = {
+        status: false,
+        showInput: false,
+      };
+    };
+
     const handleOk = () => {
       if (!isRequestAPI.value) {
         if (getData(ACCESS_TOKEN, "")) {
@@ -207,14 +222,7 @@ export default {
                   });
                   visibleModal.value = false;
                   isRequestAPI.value = false;
-                  feedback.value = {
-                    id: "",
-                    mark: "",
-                    note: "",
-                    studentId: "",
-                    topic: "",
-                    type: "GRADUATION",
-                  };
+                  resetData();
                 }
               })
               .catch((err) => {
@@ -239,14 +247,7 @@ export default {
                   });
                   visibleModal.value = false;
                   isRequestAPI.value = false;
-                  feedback.value = {
-                    id: "",
-                    mark: "",
-                    note: "",
-                    studentId: "",
-                    topic: "",
-                    type: "GRADUTION",
-                  };
+                  resetData();
                 }
               })
               .catch((err) => {
@@ -358,18 +359,7 @@ export default {
 
     const handleCancel = () => {
       visibleModal.value = false;
-      feedback.value = {
-        id: "",
-        mark: "",
-        note: "",
-        studentId: "",
-        topic: "",
-        type: "GRADUTION",
-      };
-      isEdit.value = {
-        status: false,
-        showInput: false,
-      };
+      resetData();
     };
 
     const handleEdit = () => {
