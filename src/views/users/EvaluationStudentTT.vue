@@ -25,6 +25,7 @@
                   v-model:visible="visibleModal"
                   title="Bảng đánh giá"
                   @ok="handleOk"
+                  @cancel="handleCancel"
                 >
                   <template #footer>
                     <a-button key="back" @click="handleCancel">Cancel</a-button>
@@ -375,6 +376,10 @@ export default {
         studentId: "",
         topic: "",
         type: "GRADUTION",
+      };
+      isEdit.value = {
+        status: false,
+        showInput: false,
       };
     };
 
