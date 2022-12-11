@@ -299,3 +299,7 @@ td.text-center {
 .mb-30 {
   margin-bottom: 30px;
 }
+
+.txt-bold {
+  font-weight: 600;
+}

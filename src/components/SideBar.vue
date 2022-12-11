@@ -37,6 +37,24 @@
         <p class="sidebar-link">Quản lý đợt đồ án tốt nghiệp</p>
       </router-link>
 
+      <router-link
+        to="/statistic/internship"
+        active-class="active"
+        tag="button"
+        class="side-btn"
+      >
+        <p class="sidebar-link">Thống kê đợt thực tập</p>
+      </router-link>
+
+      <router-link
+        to="/statistic/graduation"
+        active-class="active"
+        tag="button"
+        class="side-btn"
+      >
+        <p class="sidebar-link">Thống kê đợt đồ án tốt nghiệp</p>
+      </router-link>
+
       <button
         class="side-btn"
         style="text-align: left"

@@ -22,7 +22,6 @@ const router = createRouter({
           path: "",
           component: () => import("../views/Home.vue"),
         },
-
         {
           path: "/classmanager",
           component: () => import("../views/ClassManager.vue"),
@@ -50,6 +49,26 @@ const router = createRouter({
           path: "/list/internship/:id",
           name: "listStudent",
           component: () => import("../views/ListStudent.vue"),
+        },
+        {
+          path: "/statistic/internship",
+          name: "statisticTT",
+          component: () => import("../views/StatisticTT.vue"),
+        },
+        {
+          path: "/statistic/graduation",
+          name: "statisticDA",
+          component: () => import("../views/StatisticDA.vue"),
+        },
+        {
+          path: "/statistic/internship/:id",
+          name: "statisticStudentTT",
+          component: () => import("../views/StatisticStudentTT.vue"),
+        },
+        {
+          path: "/statistic/graduation/:id",
+          name: "statisticStudentDA",
+          component: () => import("../views/StatisticStudentDA.vue"),
         },
       ],
     },

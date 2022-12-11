@@ -1,28 +1,15 @@
 <template>
   <div class="list-student">
     <h2 class="title">Danh sách sinh viên đồ án</h2>
-    <div class="flex-al-sp">
+    <div class="flex-al-sp" style="margin-bottom: 50px">
       <a-input-search
         v-model:value="searchStudent"
         placeholder="Tìm sinh viên"
         style="width: 400px"
         @change="onSearch"
       />
-      <div class="btn-add">
-        <a-button type="primary" @click="showDrawer">
-          <template #icon><PlusOutlined /></template>
-          Thêm sinh viên
-        </a-button>
-      </div>
+      <span class="txt-bold">Tổng số sinh viên: {{ totalStudent }}</span>
     </div>
-    <template v-if="visible">
-      <FormGraduation
-        v-model:visible="visible"
-        :listStudent="listStudent"
-        :current="current"
-        :listTeacher="listTeacher"
-      />
-    </template>
     <template v-if="isRequestAPI">
       <div class="loading-container">
         <a-spin :indicator="indicator" />
@@ -37,35 +24,6 @@
           :pagination="false"
           bordered
         >
-          <template #operation="{ record }">
-            <div class="editable-row-group">
-              <div class="editable-row-operations">
-                <a-button type="primary" @click="showModal(record)"
-                  >Sửa</a-button
-                >
-                <a-modal
-                  v-model:visible="visibleModal"
-                  title="Thông tin đồ án"
-                  @ok="handleOk"
-                >
-                  <a-form-item label="Tên đề tài" name="graduationId">
-                    <a-input
-                      placeholder="Nhập"
-                      v-model:value="graduation.graduationTopic"
-                    ></a-input>
-                  </a-form-item>
-                </a-modal>
-              </div>
-              <div class="editable-row-operations">
-                <a-popconfirm
-                  title="Bạn muốn xóa sinh viên?"
-                  @confirm="onDelete(record.key)"
-                >
-                  <a-button type="danger">Xóa</a-button>
-                </a-popconfirm>
-              </div>
-            </div>
-          </template>
         </a-table>
         <a-pagination
           :total="totalPage * 10"
@@ -88,14 +46,12 @@ import { environment, ENDPOINT } from "../shared/config/index";
 import { getData, getDataById } from "../shared/common/common";
 import { ACCESS_TOKEN, PAGE_SIZE_LARGE } from "../shared/constant/constant";
 
-import FormGraduation from "../components/FormGraduation.vue";
 import { createToast } from "mosha-vue-toastify";
 import { PlusOutlined, LoadingOutlined } from "@ant-design/icons-vue";
 
 export default {
   components: {
     PlusOutlined,
-    FormGraduation,
     LoadingOutlined,
   },
   setup() {
@@ -105,28 +61,16 @@ export default {
     const route = useRoute();
     const current = ref(1);
     const totalPage = ref(1);
+    const totalStudent = ref(0);
     const id = route.params.id;
     const type = "graduation";
     const isRequestAPI = ref(false);
-    const graduation = ref({
-      graduationTopic: "",
-    });
+
     const indicator = h(LoadingOutlined, {
       style: {
         fontSize: "36px",
       },
       spin: true,
-    });
-    const student = ref({
-      id: "",
-      name: "",
-      studentCode: "",
-      className: "",
-      teacherId: "",
-      internshipPlace: "",
-      graduationTopic: "",
-      internshipId: "",
-      graduationId: "",
     });
     const columns = [
       {
@@ -161,19 +105,11 @@ export default {
         className: "text-center",
       },
       {
-        title: "Chức năng",
-        dataIndex: "operation",
+        title: "Điểm",
+        dataIndex: "mark",
         className: "text-center",
-        slots: {
-          customRender: "operation",
-        },
       },
     ];
-    // show form
-    const visible = ref(false);
-    const showDrawer = () => {
-      visible.value = true;
-    };
     // show modal
     const visibleModal = ref(false);
     const showModal = (record) => {
@@ -193,7 +129,7 @@ export default {
           };
           axios
             .get(
-              `${environment.API_URL}${ENDPOINT.students.index}/${type}/${id}?page=${page}&page-size=${pageSize}`,
+              `${environment.API_URL}${ENDPOINT.students.index}/statistic-graduation/${id}?page=${page}&page-size=${pageSize}`,
               config
             )
             .then((res) => {
@@ -206,6 +142,7 @@ export default {
                 }));
                 isRequestAPI.value = false;
                 totalPage.value = res.data.pagination.total_page;
+                totalStudent.value = res.data.pagination.total;
               }
             })
             .catch((err) => {
@@ -238,56 +175,6 @@ export default {
           .catch((err) => {
             console.log(err);
           });
-      }
-    };
-
-    const onDelete = (key) => {
-      const student = listStudent.value.find((item) => item.key == key);
-
-      if (!isRequestAPI.value) {
-        if (getData(ACCESS_TOKEN, "")) {
-          isRequestAPI.value = true;
-          const config = {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: getData(ACCESS_TOKEN, ""),
-            },
-          };
-          const data = {
-            ...student,
-            graduationId: 0,
-            graduationTopic: "",
-            teacherId: 0,
-          };
-          delete data.key;
-          delete data.stt;
-          delete data.teacher;
-          axios
-            .put(
-              `${environment.API_URL}${ENDPOINT.students.index}/${student.id}`,
-              data,
-              config
-            )
-            .then((res) => {
-              if (res.data.success) {
-                isRequestAPI.value = false;
-                createToast("Delete successfully", {
-                  type: "success",
-                  timeout: 1500,
-                });
-                listStudent.value = listStudent.value.filter(
-                  (item) => item.key !== key
-                );
-              }
-            })
-            .catch((err) => {
-              isRequestAPI.value = false;
-              createToast("Delete failed.", {
-                type: "danger",
-                timeout: 1500,
-              });
-            });
-        }
       }
     };
 
@@ -350,59 +237,6 @@ export default {
       }
     };
 
-    const handleOk = () => {
-      if (!isRequestAPI.value) {
-        if (getData(ACCESS_TOKEN, "")) {
-          isRequestAPI.value = true;
-          const config = {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: getData(ACCESS_TOKEN, ""),
-            },
-          };
-          const data = {
-            ...student.value,
-            graduationTopic: graduation.value.graduationTopic,
-          };
-          delete data.key;
-          delete data.stt;
-          delete data.teacher;
-
-          axios
-            .put(
-              `${environment.API_URL}${ENDPOINT.students.index}/${student.value.id}`,
-              JSON.stringify(data),
-              config
-            )
-            .then((res) => {
-              if (res.data.success) {
-                createToast("Update successfully", {
-                  type: "success",
-                  timeout: 1500,
-                });
-                const studentIdx = listStudent.value.findIndex(
-                  (item) => item.id === res.data.data.id
-                );
-                listStudent.value[studentIdx] = {
-                  ...listStudent.value[studentIdx],
-                  graduationTopic: res.data.data.graduationTopic,
-                  teacherId: res.data.data.teacherId,
-                };
-                isRequestAPI.value = false;
-                visibleModal.value = false;
-              }
-            })
-            .catch((err) => {
-              isRequestAPI.value = false;
-              createToast("Update failed.", {
-                type: "danger",
-                timeout: 1500,
-              });
-            });
-        }
-      }
-    };
-
     return {
       columns,
       listStudent,
@@ -412,20 +246,16 @@ export default {
       getListStudent,
       current,
       totalPage,
-      onDelete,
       onChange,
-      showDrawer,
-      visible,
       getListTeacher,
       listTeacher,
       searchStudent,
       onSearch,
       isRequestAPI,
       indicator,
-      graduation,
       visibleModal,
       showModal,
-      handleOk,
+      totalStudent,
     };
   },
 };
