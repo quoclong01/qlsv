@@ -8,7 +8,28 @@
         style="width: 400px"
         @change="onSearch"
       />
-      <span class="txt-bold">Tổng số sinh viên: {{ totalStudent }}</span>
+      <template v-if="isRequestAPI2">
+        <div class="loading-container">
+          <a-spin :indicator="indicator" />
+        </div>
+      </template>
+      <template v-else>
+        <div class="fl-cl">
+          <span class="txt-bold">Tổng số sinh viên: {{ totalStudent }}</span>
+          <span class="txt-bold"
+            >Tổng số sinh viên đạt giỏi: {{ filterStudent.good }}</span
+          >
+          <span class="txt-bold"
+            >Tổng số sinh viên đạt khá: {{ filterStudent.rather }}</span
+          >
+          <span class="txt-bold"
+            >Tổng số sinh viên đạt trung bình: {{ filterStudent.medium }}</span
+          >
+          <span class="txt-bold"
+            >Tổng số sinh viên trượt: {{ filterStudent.fall }}</span
+          >
+        </div>
+      </template>
     </div>
     <template v-if="isRequestAPI">
       <div class="loading-container">
@@ -46,7 +67,6 @@ import { environment, ENDPOINT } from "../shared/config/index";
 import { getData, getDataById } from "../shared/common/common";
 import { ACCESS_TOKEN, PAGE_SIZE_LARGE } from "../shared/constant/constant";
 
-import { createToast } from "mosha-vue-toastify";
 import { PlusOutlined, LoadingOutlined } from "@ant-design/icons-vue";
 
 export default {
@@ -56,6 +76,12 @@ export default {
   },
   setup() {
     const listStudent = ref([]);
+    const filterStudent = ref({
+      good: 0,
+      rather: 0,
+      medium: 0,
+      fall: 0,
+    });
     const searchStudent = ref("");
     const listTeacher = ref([]);
     const route = useRoute();
@@ -65,6 +91,7 @@ export default {
     const id = route.params.id;
     const type = "graduation";
     const isRequestAPI = ref(false);
+    const isRequestAPI2 = ref(false);
 
     const indicator = h(LoadingOutlined, {
       style: {
@@ -152,6 +179,42 @@ export default {
       }
     };
 
+    const getAllStudent = () => {
+      if (!isRequestAPI2.value) {
+        if (getData(ACCESS_TOKEN, "")) {
+          isRequestAPI2.value = true;
+          const config = {
+            headers: {
+              Authorization: getData(ACCESS_TOKEN, ""),
+            },
+          };
+          axios
+            .get(
+              `${environment.API_URL}${ENDPOINT.students.index}/statistic-graduation/${id}?page=0&page-size=${PAGE_SIZE_LARGE}`,
+              config
+            )
+            .then((res) => {
+              if (res.data.success) {
+                res.data.data.map((item, index) => {
+                  const mark = +item.mark;
+                  mark > 8
+                    ? (filterStudent.value.good += 1)
+                    : mark > 7
+                    ? (filterStudent.value.rather += 1)
+                    : mark > 4
+                    ? (filterStudent.value.medium += 1)
+                    : (filterStudent.value.fall += 1);
+                });
+                isRequestAPI2.value = false;
+              }
+            })
+            .catch((err) => {
+              isRequestAPI2.value = false;
+            });
+        }
+      }
+    };
+
     const getListTeacher = () => {
       if (getData(ACCESS_TOKEN, "")) {
         const config = {
@@ -181,6 +244,7 @@ export default {
     onMounted(() => {
       getListTeacher();
       getListStudent(0, 10);
+      getAllStudent();
     });
 
     const onChange = (page, pageSize) => {
@@ -256,6 +320,8 @@ export default {
       visibleModal,
       showModal,
       totalStudent,
+      isRequestAPI2,
+      filterStudent 
     };
   },
 };

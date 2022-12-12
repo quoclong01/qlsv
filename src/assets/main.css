@@ -303,3 +303,8 @@ td.text-center {
 .txt-bold {
   font-weight: 600;
 }
+
+.fl-cl {
+  display: flex;
+  flex-direction: column;
+}
