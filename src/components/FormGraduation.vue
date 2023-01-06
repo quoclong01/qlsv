@@ -23,11 +23,13 @@
           <template #operation="{ record }">
             <div class="editable-row-group">
               <div class="editable-row-operations">
-                <a-button type="primary" @click="showModal">Thêm</a-button>
+                <a-button type="primary" @click="showModal(record)"
+                  >Thêm</a-button
+                >
                 <a-modal
                   v-model:visible="visibleModal"
                   title="Thông tin đồ án"
-                  @ok="handleOk(record)"
+                  @ok="handleOk"
                 >
                   <a-form-item label="Tên đề tài" name="graduationId">
                     <a-input
@@ -94,6 +96,7 @@ export default {
     const graduation = ref({
       graduationTopic: "",
     });
+    const student = ref({});
 
     const indicator = h(LoadingOutlined, {
       style: {
@@ -102,11 +105,12 @@ export default {
       spin: true,
     });
     const visibleModal = ref(false);
-    const showModal = () => {
+    const showModal = (record) => {
+      student.value = record;
       visibleModal.value = true;
     };
 
-    const handleOk = (student) => {
+    const handleOk = () => {
       if (!isRequestAPI.value) {
         if (getData(ACCESS_TOKEN, "")) {
           isRequestAPI.value = true;
@@ -117,7 +121,7 @@ export default {
             },
           };
           const data = {
-            ...student,
+            ...student.value,
             graduationTopic: graduation.value.graduationTopic,
             graduationId: id,
           };
@@ -125,7 +129,7 @@ export default {
           delete data.stt;
           axios
             .put(
-              `${environment.API_URL}${ENDPOINT.students.index}/${student.id}`,
+              `${environment.API_URL}${ENDPOINT.students.index}/${data.id}`,
               JSON.stringify(data),
               config
             )
@@ -149,7 +153,7 @@ export default {
                 });
                 listStudentGraduation.value =
                   listStudentGraduation.value.filter(
-                    (item) => item.id !== student.id
+                    (item) => item.id !== data.id
                   );
                 isRequestAPI.value = false;
                 visibleModal.value = false;
@@ -236,6 +240,7 @@ export default {
       listTeacher,
       graduation,
       handleChangeTeacher,
+      student,
     };
   },
 };
