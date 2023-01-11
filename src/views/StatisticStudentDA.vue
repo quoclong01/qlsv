@@ -1,7 +1,7 @@
 <template>
   <div class="list-student">
     <h2 class="title">Danh sách sinh viên đồ án</h2>
-    <div class="flex-al-sp" style="margin-bottom: 50px">
+    <div class="flex-al-sp mb-30">
       <a-input-search
         v-model:value="searchStudent"
         placeholder="Tìm sinh viên"
@@ -31,6 +31,14 @@
         </div>
       </template>
     </div>
+    <a-button
+      type="primary"
+      class="btn-secondary mb-30"
+      @click.prevent="exportExcel"
+    >
+      <VerticalAlignBottomOutlined />
+      Download
+    </a-button>
     <template v-if="isRequestAPI">
       <div class="loading-container">
         <a-spin :indicator="indicator" />
@@ -67,12 +75,18 @@ import { environment, ENDPOINT } from "../shared/config/index";
 import { getData, getDataById } from "../shared/common/common";
 import { ACCESS_TOKEN, PAGE_SIZE_LARGE } from "../shared/constant/constant";
 
-import { PlusOutlined, LoadingOutlined } from "@ant-design/icons-vue";
+import {
+  PlusOutlined,
+  LoadingOutlined,
+  VerticalAlignBottomOutlined,
+} from "@ant-design/icons-vue";
+import xlsx from "xlsx/dist/xlsx.full.min";
 
 export default {
   components: {
     PlusOutlined,
     LoadingOutlined,
+    VerticalAlignBottomOutlined,
   },
   setup() {
     const listStudent = ref([]);
@@ -301,6 +315,16 @@ export default {
       }
     };
 
+    const exportExcel = () => {
+      const data = [...listStudent.value];
+      data.forEach((item) => delete item.key);
+      const XLSX = xlsx;
+      const workbook = XLSX.utils.book_new();
+      const worksheet = XLSX.utils.json_to_sheet(data);
+      XLSX.utils.book_append_sheet(workbook, worksheet, "listStudent");
+      XLSX.writeFile(workbook, `DSDA_${id}.xlsx`);
+    };
+
     return {
       columns,
       listStudent,
@@ -321,7 +345,8 @@ export default {
       showModal,
       totalStudent,
       isRequestAPI2,
-      filterStudent 
+      filterStudent,
+      exportExcel,
     };
   },
 };

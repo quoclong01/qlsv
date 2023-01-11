@@ -308,3 +308,9 @@ td.text-center {
   display: flex;
   flex-direction: column;
 }
+
+.list-student-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
