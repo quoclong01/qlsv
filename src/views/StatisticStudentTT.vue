@@ -325,7 +325,14 @@ export default {
 
     const exportExcel = () => {
       const data = [...listStudent.value];
-      data.forEach((item) => delete item.key);
+      data.forEach((item) => {
+        delete item.key;
+        delete item.id;
+        delete item.teacherId;
+        delete item.graduationTopic;
+        delete item.internshipId;
+        delete item.graduationId;
+      });
       const XLSX = xlsx;
       const workbook = XLSX.utils.book_new();
       const worksheet = XLSX.utils.json_to_sheet(data);
