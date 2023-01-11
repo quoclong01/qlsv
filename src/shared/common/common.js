@@ -13,3 +13,10 @@ export const getDataById = (data, id) => {
   }
   return "";
 };
+
+export const getIdTeacher = (data, teacher) => {
+  if (teacher) {
+    return data.find((item) => item.label.includes(teacher)).value;
+  }
+  return 0;
+};

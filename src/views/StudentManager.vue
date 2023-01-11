@@ -9,8 +9,37 @@
         @change="onSearch"
       />
       <div class="btn-add">
+        <div class="file-input">
+          <input
+            type="file"
+            name="file-input"
+            id="file-input"
+            class="file-input__input"
+            @change="handleChange"
+          />
+          <label class="file-input__label" for="file-input">
+            <svg
+              aria-hidden="true"
+              focusable="false"
+              data-prefix="fas"
+              data-icon="upload"
+              class="svg-inline--fa fa-upload fa-w-16"
+              role="img"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 512 512"
+            >
+              <path
+                fill="currentColor"
+                d="M296 384h-80c-13.3 0-24-10.7-24-24V192h-87.7c-17.8 0-26.7-21.5-14.1-34.1L242.3 5.7c7.5-7.5 19.8-7.5 27.3 0l152.2 152.2c12.6 12.6 3.7 34.1-14.1 34.1H320v168c0 13.3-10.7 24-24 24zm216-8v112c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24V376c0-13.3 10.7-24 24-24h136v8c0 30.9 25.1 56 56 56h80c30.9 0 56-25.1 56-56v-8h136c13.3 0 24 10.7 24 24zm-124 88c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20zm64 0c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20z"
+              ></path>
+            </svg>
+            <span>Import file</span></label
+          >
+        </div>
         <a-button type="danger" @click="handleDeleteAll">Delete All</a-button>
-        <a-button type="primary" @click="showDrawer" style="margin-left: 20px;"> Thêm sinh viên </a-button>
+        <a-button type="primary" @click="showDrawer" style="margin-left: 20px">
+          Thêm sinh viên
+        </a-button>
       </div>
     </div>
     <template v-if="visible">
@@ -70,13 +99,14 @@ import { ref, onMounted, h } from "vue";
 import { useRoute } from "vue-router";
 
 import { environment, ENDPOINT } from "../shared/config/index";
-import { getData, getDataById } from "../shared/common/common";
+import { getData, getDataById, getIdTeacher } from "../shared/common/common";
 import { ACCESS_TOKEN, columnStudents } from "../shared/constant/constant";
 
 import { createToast } from "mosha-vue-toastify";
 import { LoadingOutlined, UploadOutlined } from "@ant-design/icons-vue";
 
 import FormStudent from "../components/FormStudent.vue";
+import readXlsxFile from "read-excel-file";
 
 export default {
   components: {
@@ -109,6 +139,28 @@ export default {
     const showDrawer = () => {
       visible.value = true;
       isEdit.value = { status: false, id: "" };
+    };
+
+    const addStudent = (student) => {
+      if (getData(ACCESS_TOKEN, "")) {
+        const config = {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: getData(ACCESS_TOKEN, ""),
+          },
+        };
+        axios
+          .post(
+            `${environment.API_URL}${ENDPOINT.students.index}`,
+            JSON.stringify(student),
+            config
+          )
+          .then((res) => {
+            if (res.data.success) {
+            }
+          })
+          .catch((err) => {});
+      }
     };
 
     const getListStudent = (page, pageSize, name) => {
@@ -232,6 +284,37 @@ export default {
       }
     };
 
+    const handleChange = (event) => {
+      const file = event.target.files ? event.target.files[0] : null;
+      if (file) {
+        readXlsxFile(file).then((rows) => {
+          listStudent.value = rows.splice(1).map((item, index) => ({
+            key: (index + (current.value - 1) * 10).toString(),
+            stt: index + (current.value - 1) * 10,
+            className: item[2],
+            internshipPlace: "",
+            name: item[1],
+            studentCode: item[0].toString(),
+            graduationTopic: "",
+            teacher: item[3],
+            teacherId: getIdTeacher(listTeacher.value, item[3]),
+          }));
+          listStudent.value.map((item) => {
+            const data = {
+              ...item,
+              internshipId: 0,
+              graduationId: 0,
+            };
+            delete data.stt;
+            delete data.key;
+            delete data.teacher;
+
+            addStudent(data);
+          });
+        });
+      }
+    };
+
     const handleDeleteAll = () => {
       if (!isRequestAPI.value) {
         isRequestAPI.value = true;
@@ -282,6 +365,8 @@ export default {
       isRequestAPI,
       indicator,
       handleDeleteAll,
+      addStudent,
+      handleChange,
     };
   },
 };
