@@ -90,6 +90,7 @@ export default {
   },
   setup() {
     const listStudent = ref([]);
+    const semester = ref();
     const filterStudent = ref({
       good: 0,
       rather: 0,
@@ -106,7 +107,7 @@ export default {
     const type = "graduation";
     const isRequestAPI = ref(false);
     const isRequestAPI2 = ref(false);
-
+    const isRequestAPIs = ref(false);
     const indicator = h(LoadingOutlined, {
       style: {
         fontSize: "36px",
@@ -255,7 +256,33 @@ export default {
       }
     };
 
+    const getSemeterById = () => {
+      if (!isRequestAPIs.value) {
+        if (getData(ACCESS_TOKEN, "")) {
+          isRequestAPIs.value = true;
+          const config = {
+            headers: {
+              Authorization: getData(ACCESS_TOKEN, ""),
+            },
+          };
+          axios
+            .get(
+              `${environment.API_URL}${ENDPOINT.semesters.index}/${id}`,
+              config
+            )
+            .then((res) => {
+              isRequestAPIs.value = false;
+              semester.value = res.data.data;
+            })
+            .catch((err) => {
+              isRequestAPIs.value = false;
+            });
+        }
+      }
+    };
+
     onMounted(() => {
+      getSemeterById();
       getListTeacher();
       getListStudent(0, 10);
       getAllStudent();
@@ -316,15 +343,20 @@ export default {
     };
 
     const exportExcel = () => {
-      const data = [...listStudent.value];
-      data.forEach((item) => {
+      const data = [...listStudent.value].map((item) => {
         delete item.key;
         delete item.id;
         delete item.teacherId;
         delete item.internshipPlace;
         delete item.internshipId;
         delete item.graduationId;
+        return {
+          ...item,
+          semester: semester.value.semester,
+          year: semester.value.year,
+        };
       });
+
       const XLSX = xlsx;
       const workbook = XLSX.utils.book_new();
       const worksheet = XLSX.utils.json_to_sheet(data);
@@ -354,6 +386,7 @@ export default {
       isRequestAPI2,
       filterStudent,
       exportExcel,
+      semester,
     };
   },
 };
