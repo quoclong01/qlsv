@@ -25,7 +25,8 @@ export const ENDPOINT = {
   },
   students: {
     index: `${RESOURCES.students}`,
-    addSemester: `${RESOURCES.students}/add-semester`
+    addSemester: `${RESOURCES.students}/add-semester`,
+    all: `${RESOURCES.students}/all`
   },
   users: {
     index: `${RESOURCES.users}`,
